@@ -15,10 +15,15 @@ import tensorflow as tf
 from classification.decoders import multi_task_tf_examples_decoder as tf_exam
 from classification.protos import input_reader_pb2
 
+from classification.batchers import train_serialized_batcher
+from classification.batchers import eval_serialized_batcher
+from classification.batchers import batched_eval_serialized_batcher
+#import pdb;pdb.set_trace()
+
 
 parallel_reader = tf.contrib.slim.parallel_reader
 
-def build_train(input_reader_config):
+def build(input_reader_config):
     """Builds a tensor dictionary based on InputReader config
 
     Args:
@@ -43,6 +48,8 @@ def build_train(input_reader_config):
                             '`input_reader_config.`')
 
         shuffling = input_reader_config.shuffle
+        if not input_reader_config.num_examples:
+            raise ValueError('Must specify number of data examples')
         num_examples = input_reader_config.num_examples
         records = [os.path.join(config.input_path,f) for f in os.listdir(config.input_path)]
         #doesn't control number of epochs very nicely
@@ -54,25 +61,29 @@ def build_train(input_reader_config):
         num_batches_past_min_queue_size = input_reader_config.num_batches_past_min_queue_size
 
         if shuffling:
+            if not input_reader_config.batch_size:
+                raise ValueError('batch_size must be specified when training.')
             batch_size = input_reader_config.batch_size
             num_threads = input_reader_config.num_threads
 
-            batcher = TrainSerializedBatcher(batch_size,
+            batcher = train_serialized_batcher.TrainSerializedBatcher(batch_size,
                                              num_examples,
                                              fraction_of_examples_in_queue,
                                              num_batches_past_min_queue_size,
-                                             num_threads).
+                                             num_threads).\
                         batch_examples(string_tensor)
 
-        else if not input_reader_config.eval_batch_mode:
-            batcher = EvalSerializerBatcher(num_examples).
+        elif not input_reader_config.eval_batch_mode:
+            batcher = batchersEvalSerializerBatcher(num_examples).\
                         batch_examples(string_tensor)
 
-        else if input_reader_config.eval_batch_mode:
-            batcher = Batched(batch_size,
+        elif input_reader_config.eval_batch_mode:
+            if not input_reader_config.batch_size:
+                raise ValueError('batch_size must be specified when doing batched eval.')
+            batcher = batchers.BatchEvalSerializedBatcher(batch_size,
                               num_examples,
                               fraction_of_examples_in_queue,
-                              num_batches_past_min_queue_size).
+                              num_batches_past_min_queue_size).\
                         batch_examples(string_tensor)
 
         else:
@@ -82,6 +93,6 @@ def build_train(input_reader_config):
             input_reader_config.multi_task_label_name,
             (input_reader_config.image_height,input_reader_config.image_width))
 
-        return decoder.decode(batcher,batcher.get_batch_size())
+        return decoder.decode(batcher,batcher["batch_size"])
 
     raise ValueError('Unsupported input_reader_config.')

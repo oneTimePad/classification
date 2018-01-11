@@ -1,2 +1,4 @@
 protos/__pycache__/*
+extractors/__pycache__/*
+batchers/__pycache__/*
 protos/*.pb2
