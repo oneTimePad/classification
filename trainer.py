@@ -44,6 +44,6 @@ model_config = configs["model_config"]
 is_training = False
 
 decoded_tensors = input_reader_builder.build(input_config)
-classification_model = model.builder(model_config,is_training)
+classification_model = model_builder.build(model_config,is_training)
 
 import pdb;pdb.set_trace()
