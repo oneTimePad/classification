@@ -1,0 +1,14 @@
+message MultiTaskClass {
+    required string name = 1;
+    required int32 num  = 2;
+
+}
+
+
+message Model {
+
+    required string extractor = 1;
+    // Number of classes to predict.
+    repeated MultiTaskClass multi_task_label = 2;
+
+}
