@@ -1,5 +1,7 @@
 
-from classification import batcher
+from classification.batchers import batcher
+import tensorflow as tf
+import classification.fields as fields
 
 class EvalSerializerBatcher(batcher.Batcher):
     """Used for Eval step to batch up serialized Examples"""
@@ -22,7 +24,7 @@ class EvalSerializerBatcher(batcher.Batcher):
         super(EvalSerializerBatcher,self).__init__(batch_size,
                                                    batch_capacity,
                                                    min_after_dequeue,
-                                                   num_threads = num_threads
+                                                   num_threads = num_threads,
                                                    shuffle = False)
 
 
@@ -35,10 +37,11 @@ class EvalSerializerBatcher(batcher.Batcher):
         """
 
         serialized_examples = tensors_to_batch
-        batch = tf.train.batch({fields.InputDataFields.serialized: [serialized_examples]},
+        batch_dict = tf.train.batch({fields.InputDataFields.serialized:
+                                     serialized_examples},
                                 self._batch_size,
 			                    capacity = slef._batch_capacity,
 			                    num_threads = self._num_threads,
                                 name="eval_serialized_queue")
-
-        return batch
+        self._set_batch_size_to_dict(batch_dict)
+        return batch_dict

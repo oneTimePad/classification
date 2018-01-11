@@ -19,7 +19,7 @@ class Batcher(object):
         self._min_after_dequeue = min_after_dequeue
         self._num_threads = num_threads
 
-    @abstractmethod()
+    @abstractmethod
     def batch_examples(self,tensors_to_batch):
         """Batches up examples and returns a tensor representing a batch
 
@@ -30,5 +30,6 @@ class Batcher(object):
         """
         pass
 
-    def get_batch_size(self):
-        return self._batch_size
+    def _set_batch_size_to_dict(self,batch_dict):
+        batch_dict.update({"batch_size":
+                                self._batch_size})

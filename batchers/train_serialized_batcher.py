@@ -1,14 +1,16 @@
 
-from classification import batcher
+from classification.batchers import batcher
+import tensorflow as tf
+import classification.fields as fields
 
 class TrainSerializedBatcher(batcher.Batcher):
     """Used at the training step to batch up serialized records"""
     def __init__(self,
-                 batch_size
+                 batch_size,
                  number_of_training_examples,
                  fraction_of_examples_in_queue,
                  num_batches_past_min_queue_size = 3,
-                 batch_threads = 4):
+                 num_threads = 4):
         """
             Args:
                 batch_size: batch size for training step
@@ -22,7 +24,7 @@ class TrainSerializedBatcher(batcher.Batcher):
 
 
         min_after_dequeue = int(self._number_of_training_examples*self._fraction_of_examples_in_queue)
-        batch_capacity = min_queue_size + num_batches_past_min_queue_size * batch_size
+        batch_capacity = min_after_dequeue + num_batches_past_min_queue_size * batch_size
 
         super(TrainSerializedBatcher,self).__init__(batch_size,
                                                     batch_capacity,
@@ -37,12 +39,12 @@ class TrainSerializedBatcher(batcher.Batcher):
                 batch: tf.train.batch tensors of serialized examples (dict)
         """
         serialized_examples = tensors_to_batch
-        batch = tf.train.shuffle_batch(
-                {fields.InputDataFields.serialized: [serialized_examples]},
-                batch_size = self._batch_size,
-                num_threads = self._num_threads,
-                capacity = self._batch_capacity,
-                min_after_dequeue = self._min_after_dequeue,
-                "train_serialized_queue")
-
-        return batch
+        batch_dict = tf.train.shuffle_batch({fields.InputDataFields.serialized:
+                                             serialized_examples},
+                                        batch_size = self._batch_size,
+                                        num_threads = self._num_threads,
+                                        capacity = self._batch_capacity,
+                                        min_after_dequeue = self._min_after_dequeue,
+                                        name = "train_serialized_queue")
+        self._set_batch_size_to_dict(batch_dict)
+        return batch_dict
