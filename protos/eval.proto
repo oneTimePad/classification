@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+package classification.protos;
+
+
+message EvalConfig {
+    required uint32 num_examples = 1;
+
+    required string checkpoint_dir = 2;
+
+}
