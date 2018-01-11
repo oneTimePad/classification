@@ -16,26 +16,6 @@ class FeatureExtractor(object):
         self._reuse = reuse
 
     @abstractmethod
-    def get_trainable_variables(self):
-        """
-        Retreive trainable variables
-
-        Returns:
-            trainable_variables : flattened list of varis
-        """
-        pass
-
-    @abstractmethod
-    def get_update_ops(self):
-        """
-        Retreive update ops
-
-        Returns:
-            update_ops : flattened list of update operations
-        """
-        pass
-
-    @abstractmethod
     def get_pre_ops(self):
         """
             Operations to peform before restoring
@@ -76,5 +56,18 @@ class FeatureExtractor(object):
             preprocessed_inputs: processed batch to go to model
         Returns:
             logits: dict of logits keys by strings in fields.InputDataFields.labels
+        """
+        pass
+
+    @abstractmethod
+    def loss(self,labels):
+        """
+        Defines the model's loss
+
+        Args:
+            labels from input pipepline
+
+        Returns:
+            loss
         """
         pass
