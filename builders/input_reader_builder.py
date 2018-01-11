@@ -18,7 +18,7 @@ from classification.protos import input_reader_pb2
 
 parallel_reader = tf.contrib.slim.parallel_reader
 
-def build(input_reader_config,training=False):
+def build_train(input_reader_config):
     """Builds a tensor dictionary based on InputReader config
 
     Args:
@@ -42,16 +42,46 @@ def build(input_reader_config,training=False):
             raise ValueError('At least one input path must be specified in'
                             '`input_reader_config.`')
 
+        shuffling = input_reader_config.shuffle
+        num_examples = input_reader_config.num_examples
         records = [os.path.join(config.input_path,f) for f in os.listdir(config.input_path)]
         #doesn't control number of epochs very nicely
-        filenames_queue = tf.train.string_input_producer(records,shuffle=training,num_epochs=None)
+        filenames_queue = tf.train.string_input_producer(records,shuffle=input_reader_config.shuffle,num_epochs=None)
         reader = tf.TFRecordReader()
         _,string_tensor = reader.read(filenames_queue)
-        #TODO add batcher
+
+        fraction_of_examples_in_queue = input_reader_config.fraction_of_examples_in_queue
+        num_batches_past_min_queue_size = input_reader_config.num_batches_past_min_queue_size
+
+        if shuffling:
+            batch_size = input_reader_config.batch_size
+            num_threads = input_reader_config.num_threads
+
+            batcher = TrainSerializedBatcher(batch_size,
+                                             num_examples,
+                                             fraction_of_examples_in_queue,
+                                             num_batches_past_min_queue_size,
+                                             num_threads).
+                        batch_examples(string_tensor)
+
+        else if not input_reader_config.eval_batch_mode:
+            batcher = EvalSerializerBatcher(num_examples).
+                        batch_examples(string_tensor)
+
+        else if input_reader_config.eval_batch_mode:
+            batcher = Batched(batch_size,
+                              num_examples,
+                              fraction_of_examples_in_queue,
+                              num_batches_past_min_queue_size).
+                        batch_examples(string_tensor)
+
+        else:
+            raise ValueError("Please check for InputReader config...")
+
         decoder = tf_exam.MultiTaskTfExamplesDecoder(
             input_reader_config.multi_task_label_name,
             (input_reader_config.image_height,input_reader_config.image_width))
 
-        return decoder.decode(string_tensor,11)
+        return decoder.decode(batcher,batcher.get_batch_size())
 
     raise ValueError('Unsupported input_reader_config.')

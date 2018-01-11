@@ -11,20 +11,21 @@ message InputReader {
   // shuffled randomly.
   optional bool shuffle = 2 [default=true];
 
-  // Maximum number of records to keep in reader queue.
-  optional uint32 queue_capacity = 3 [default=2000];
+  //Number of examples to keep in queue at min (to allow for good shuffling)
+  //min_after_dequeue is calculated using this. (only if shuffling or batched eval)
+  optional float32 fraction_of_examples_in_queue = 3 [default=0.08];
 
-  // Minimum number of records to keep in reader queue. A large value is needed
-  // to generate a good random shuffle.
-  optional uint32 min_after_dequeue = 4 [default=1000];
+  //how many batches past the min_queue_size to keep in queue (only if shuffling or batched eval)
+  optional num_batches_past_min_queue_size = 4 [default=3];
 
   // The number of times a data source is read. If set to zero, the data source
   // will be reused indefinitely.
   optional uint32 num_epochs = 5 [default=0];
 
-  // Number of reader instances to create.
-  optional uint32 num_readers = 6 [default=8];
+  // Number of threads to batch data.
+  optional uint32 num_threads = 6 [default=4];
 
+  required int32 batch_size = 7;
 
   oneof input_reader {
     TFRecordInputReader tf_record_input_reader = 8;
@@ -35,6 +36,11 @@ message InputReader {
 
   required uint32 image_height = 11;
   required uint32 image_width = 12;
+
+  //only used by an eval input config
+  optional bool eval_batch_mode = 13 [default=false]
+
+  required num_examples = 14;
 }
 
 // An input reader that reads TF Example protos from local TFRecord files.

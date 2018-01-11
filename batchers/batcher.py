@@ -29,3 +29,6 @@ class Batcher(object):
             tensor_dict: A dict containing batched tensors, see fields.py
         """
         pass
+
+    def get_batch_size(self):
+        return self._batch_size

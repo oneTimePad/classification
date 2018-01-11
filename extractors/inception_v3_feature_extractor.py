@@ -4,13 +4,13 @@ from classification.extractors import feature_extractor
 
 class InceptionV3FeatureExtractor(feature_extractor.FeatureExtractor):
 
-    def get_trainable_variables():
+    def get_trainable_variables(self):
         pass
 
-    def get_update_ops():
+    def get_update_ops(self):
         pass
 
-    def get_pre_ops():
+    def get_pre_ops(self):
         pass
 
     def preprocess(self,image):

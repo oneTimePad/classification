@@ -5,7 +5,7 @@ class EvalSerializerBatcher(batcher.Batcher):
     """Used for Eval step to batch up serialized Examples"""
     def __init__(self,
                 number_of_eval_examples,
-                batch_size =):
+                batch_size = 50):
         """
             Args:
                 number_of_eval_examples : how many examples to use for evaluation

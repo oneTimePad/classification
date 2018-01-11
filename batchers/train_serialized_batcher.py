@@ -21,7 +21,7 @@ class TrainSerializedBatcher(batcher.Batcher):
         self._fraction_of_examples_in_queue = fraction_of_examples_in_queue
 
 
-        min_queue_size = int(self._number_of_training_examples*self._fraction_of_examples_in_queue)
+        min_after_dequeue = int(self._number_of_training_examples*self._fraction_of_examples_in_queue)
         batch_capacity = min_queue_size + num_batches_past_min_queue_size * batch_size
 
         super(TrainSerializedBatcher,self).__init__(batch_size,
