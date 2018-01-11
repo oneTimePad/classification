@@ -1,7 +1,7 @@
 
 from classification import fields
 from classification.builders.feature_extractor_map import NAME_TO_FEATURE_EXTRACTOR
-
+from classification.protos import model_pb2
 
 def generate_logits(pre_logits,
                     filter_map,
@@ -41,7 +41,7 @@ def generate_logits(pre_logits,
     return logits
 
 
-def build(model_build_config,
+def build(model_config,
           is_training,
           reuse = False):
     """Builds FeatureExtraction model based on config
@@ -53,10 +53,10 @@ def build(model_build_config,
        Returns:
         FeatureExtractor object
     """
-    if not isinstance(model_build_config,model_pb2.Model):
+    if not isinstance(model_config,model_pb2.Model):
         raise ValueError('model_build_config not type'
                         'model_pb2.Model')
-    model = NAME_TO_FEATURE_EXTRACTOR[model_build_config.extractor]
+    model = NAME_TO_FEATURE_EXTRACTOR[model_config.extractor]
     built_model = model(is_training,reuse)
 
     label_to_classes = {
