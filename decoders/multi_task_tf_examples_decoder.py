@@ -1,4 +1,5 @@
 import tensorflow as tf
+from classification import fields
 
 class MultiTaskTfExamplesDecoder(object):
 
@@ -30,7 +31,8 @@ class MultiTaskTfExamplesDecoder(object):
             batched_decoded_tensors: dict of batches of decoded TFRecords of batch_size
         """
         #faster to decode tensors as a batch
-        batched_decoded_tensors = tf.parse_example(batched_serialized_tensors,self._keys_to_features)
+        batched_decoded_tensors = tf.parse_example(batched_serialized_tensors[fields.InputDataFields.serialized],
+                                                    self._keys_to_features)
         image_float = tf.cast(
                             tf.decode_raw(batched_decoded_tensors['input'],
                                           tf.uint8),
