@@ -7,13 +7,15 @@ class EvalSerializerBatcher(batcher.Batcher):
     """Used for Eval step to batch up serialized Examples"""
     def __init__(self,
                 number_of_eval_examples,
-                batch_size = 50):
+                batch_size = 50,
+                name = 'eval_serialized_batcher'):
         """
             Args:
                 number_of_eval_examples : how many examples to use for evaluation
         """
 
         self._number_of_eval_examples = number_of_eval_examples
+        self._name = name
 
         batch_size = self._number_of_eval_examples
         min_after_dequeue = None # not used
@@ -42,6 +44,6 @@ class EvalSerializerBatcher(batcher.Batcher):
                                 self._batch_size,
 			                    capacity = slef._batch_capacity,
 			                    num_threads = self._num_threads,
-                                name="eval_serialized_queue")
+                                name = self._name)
         self._set_batch_size_to_dict(batch_dict)
         return batch_dict

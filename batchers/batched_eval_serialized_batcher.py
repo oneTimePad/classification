@@ -8,7 +8,8 @@ class BatchEvalSerializedBatcher(batcher.Batcher):
                  batch_size,
                  number_of_eval_examples,
                  fraction_of_examples_in_queue,
-                 num_batches_past_min_queue_size):
+                 num_batches_past_min_queue_size,
+                 name = "batched_eval_serialized_batcher"):
         """
             Args:
                 number_of_eval_examples : how many examples to use for evaluation
@@ -16,6 +17,7 @@ class BatchEvalSerializedBatcher(batcher.Batcher):
 
         self._number_of_training_examples = number_of_training_examples
         self._fraction_of_examples_in_queue = fraction_of_examples_in_queue
+        self._name = name
 
         num_threads = 1
 
@@ -43,6 +45,6 @@ class BatchEvalSerializedBatcher(batcher.Batcher):
                                 self._batch_size,
 			                    capacity = slef._batch_capacity,
 			                    num_threads = self._num_threads,
-                                name = "batched_eval_serialized_queue")
+                                name = self._name)
         self._set_batch_size_to_dict(batch_dict)
         return batch_dict

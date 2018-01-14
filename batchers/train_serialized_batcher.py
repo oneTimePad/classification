@@ -10,7 +10,8 @@ class TrainSerializedBatcher(batcher.Batcher):
                  number_of_training_examples,
                  fraction_of_examples_in_queue,
                  num_batches_past_min_queue_size = 3,
-                 num_threads = 4):
+                 num_threads = 4,
+                 name = 'train_serialized_batcher'):
         """
             Args:
                 batch_size: batch size for training step
@@ -21,7 +22,7 @@ class TrainSerializedBatcher(batcher.Batcher):
         """
         self._number_of_training_examples = number_of_training_examples
         self._fraction_of_examples_in_queue = fraction_of_examples_in_queue
-
+        self._name = name
 
         min_after_dequeue = int(self._number_of_training_examples*self._fraction_of_examples_in_queue)
         batch_capacity = min_after_dequeue + num_batches_past_min_queue_size * batch_size
@@ -45,6 +46,6 @@ class TrainSerializedBatcher(batcher.Batcher):
                                         num_threads = self._num_threads,
                                         capacity = self._batch_capacity,
                                         min_after_dequeue = self._min_after_dequeue,
-                                        name = "train_serialized_queue")
+                                        name = self._name)
         self._set_batch_size_to_dict(batch_dict)
         return batch_dict
