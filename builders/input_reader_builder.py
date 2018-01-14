@@ -52,6 +52,7 @@ def build(input_reader_config):
             raise ValueError('Must specify number of data examples')
         num_examples = input_reader_config.num_examples
         records = [os.path.join(config.input_path,f) for f in os.listdir(config.input_path)]
+
         #doesn't control number of epochs very nicely
         filenames_queue = tf.train.string_input_producer(records,shuffle=input_reader_config.shuffle,num_epochs=None)
         reader = tf.TFRecordReader()
