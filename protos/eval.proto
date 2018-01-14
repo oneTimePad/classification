@@ -8,4 +8,6 @@ message EvalConfig {
 
     required string checkpoint_dir = 2;
 
+    required checkpoint_to_restore = 3;
+
 }
