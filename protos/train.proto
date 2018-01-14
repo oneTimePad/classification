@@ -4,8 +4,8 @@ package classification.protos;
 
 
 message RestoredVariableScope {
-    optional name_in_checkpoint = 1[default=""];
-    required name_in_model      = 2;
+    optional string name_in_checkpoint = 1[default=""];
+    required string name_in_model      = 2;
 }
 
 // Message for configuring DetectionModel training jobs (train.py).
@@ -29,16 +29,16 @@ message TrainConfig {
 
   //use has the option of either specifying which to exclude from the fine-tune
   //or which to include
-  optional string exclude_from_fine_tune = 8 [default=""]
+  optional string exclude_from_fine_tune = 8 [default=""];
 
   repeated RestoredVariableScope include_from_fine_tune =9;
 
   //where to store/save training checkpoint (used for restoring too)
-  optional string from_classification_checkpoint = 9 [default=false];
+  optional string from_classification_checkpoint = 10 [default=""];
 
   // Number of steps to train the Model for. If 0, will train the model
   // indefinitely.
-  optional uint32 num_steps = 10 [default=0];
+  optional uint32 num_steps = 11 [default=0];
 
   // Variables or Scopes that should not be updated during training.
   repeated string scope_or_variables_to_train = 12;
@@ -50,5 +50,5 @@ message TrainConfig {
   optional bool eval_while_training = 14 [default=false];
 
   //number of steps to log at
-  optional int32 log_frequency = 15[default=10]
+  optional int32 log_frequency = 15[default=10];
 }
