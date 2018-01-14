@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 class EvaluationCoordinator(object):
+
     def __init__(self,
                  is_batch_evaluation):
         """Coordinates an Evaluation Sesssion (not used for Eval while training)
@@ -17,6 +18,7 @@ class EvaluationCoordinator(object):
         for fmt,op in eval_ops_dict.items():
             self.eval_fmt_str+=fmt
             self.eval_ops.append(op)
+
     def eval(self,
             eval_config,
             eval_ops_dict):
