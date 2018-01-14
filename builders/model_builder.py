@@ -28,7 +28,7 @@ def generate_logits(pre_logits,
 
     logits = {}
 
-    with tf.variable_scope('logits',reuse=reuse):
+    with tf.variable_scope('Logits',reuse=reuse):
         for label, filters  in filter_map.items():
             layer = tf.layers.conv2d(pre_logits,
                                      kernel_initializer=tf.contrib.layers.variance_scaling_initializer(),
