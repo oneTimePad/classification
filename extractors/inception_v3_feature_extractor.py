@@ -1,7 +1,7 @@
-
-
+import tensorflow as tf
 from classification.extractors import feature_extractor
-
+import tensorflow.contrib.slim as slim
+from tensorflow.contrib.slim.nets import inception
 class InceptionV3FeatureExtractor(feature_extractor.FeatureExtractor):
 
     def get_trainable_variables(self):
@@ -37,7 +37,7 @@ class InceptionV3FeatureExtractor(feature_extractor.FeatureExtractor):
         Returns:
             pre_logits: layer right before the logits
         """
-        with slim.arg_scope(inception_v3_arg_scope()):
-              _,end_points = inception_v3(
-    image_batch,num_classes=1001,is_training=self._is_training,reuse=self._reuse)
-        return end_points('PreLogits')
+        with slim.arg_scope(inception.inception_v3_arg_scope()):
+              _,end_points = inception.inception_v3(
+    preprocessed_inputs,num_classes=1001,is_training=self._is_training,reuse=self._reuse)
+        return end_points['PreLogits']
