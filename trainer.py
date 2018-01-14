@@ -7,7 +7,7 @@ from classification.batchers import pre_fetch_batcher
 from classification.protos import pipeline_pb2
 from classification.builders import input_reader_builder
 from classification.builders import model_builder
-
+from classification.coordinators import training_coordinator
 
 def get_configs_from_pipeline_file(pipeline_config_path):
   """Reads configuration from a pipeline_pb2.TrainEvalPipelineConfig.
@@ -28,13 +28,27 @@ def get_configs_from_pipeline_file(pipeline_config_path):
 
   configs = {}
   configs["model_config"] = pipeline_config.model
-  #configs["train_config"] = pipeline_config.train_config
+  configs["train_config"] = pipeline_config.train_config
   configs["train_input_config"] = pipeline_config.train_input_reader
  # configs["eval_config"] = pipeline_config.eval_config
  # configs["eval_input_config"] = pipeline_config.eval_input_reader
   return configs
 
-def get_input(input_config,preprocessor = None):
+def _xentropy_loss_op(logit,label,name):
+	"""
+		Constructs Cross Entropy loss
+		Args:
+			logits -> output units of network rank 0
+			label  -> matching labels rank 0
+		return:
+	 		mean cross entropy
+	"""
+	return tf.reduce_mean(
+				tf.nn.sparse_softmax_cross_entropy_with_logits(
+					logits=logit,
+					labels=label),name=name)
+
+def get_inputs(input_config,preprocessor = None):
     """Generate input pipeline
 
        Args:
@@ -56,6 +70,35 @@ def get_input(input_config,preprocessor = None):
 
     return batcher
 
+def get_loss(logits,
+             batcher):
+    """Generates combined losss
+
+       Args:
+          logits: last layer output of classification_model (from predict)
+          batcher: output of get_inputs
+       Returns:
+          loss: the combined loss for all labels
+    """
+    batched_tensors = batcher.dequeue()
+    predictions = logits(batched_tensors["input"])
+    losses = []
+    labels = {label:
+                tensor for label, tensor in batched_tensors.items()
+                            if label != "input"}
+    for label, tensor in labels.items():
+        loss = _xentropy_loss_op(predictions[label],
+                                 tensor,
+                                 name=label)
+        tf.losses.add_loss(loss,
+                            tf.GraphKeys.LOSSES)
+        losses.append(loss)
+    loss = tf.reduce_sum(losses,
+                         name = "total_loss")
+
+    return loss
+
+
 
 configs = get_configs_from_pipeline_file("/home/lie/aiaa/ComputerVision/deeplearning/pipeline_config.config")
 
@@ -64,5 +107,11 @@ model_config = configs["model_config"]
 is_training = False
 
 
-classification_model = model_builder.build(model_config,is_training)
-batcher = get_input(input_config,classification_model.preprocess)
+classification_model = model_builder.build(model_config, is_training)
+batcher = get_inputs(input_config, classification_model.preprocess)
+loss = get_loss(classification_model.predict, batcher)
+
+#train_coord = training_coordinator.TrainingCoordinator(train_config,
+#                                                       loss,
+#                                                       scalar_updates,
+#                                                       optimizer)
