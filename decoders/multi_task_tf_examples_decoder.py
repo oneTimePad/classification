@@ -30,6 +30,7 @@ class MultiTaskTfExamplesDecoder(object):
           Returns:
             batched_decoded_tensors: dict of batches of decoded TFRecords of batch_size
         """
+
         #faster to decode tensors as a batch
         batched_decoded_tensors = tf.parse_example(batched_serialized_tensors[fields.InputDataFields.serialized],
                                                     self._keys_to_features)
