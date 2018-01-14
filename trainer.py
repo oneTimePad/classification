@@ -9,6 +9,9 @@ from classification.builders import input_reader_builder
 from classification.builders import model_builder
 from classification.coordinators import training_coordinator
 
+FLAGS = tf.app.flags.FLAGS
+tf.app.flags.DEFINE_string('pipeline_config',None,'')
+
 def get_configs_from_pipeline_file(pipeline_config_path):
   """Reads configuration from a pipeline_pb2.TrainEvalPipelineConfig.
 
@@ -110,8 +113,10 @@ def get_loss(logits,
     return loss, scalar_updates
 
 
+if not FLAGS.pipeline_config:
+    raise ValueError("Must specify pipeline config file")
 
-configs = get_configs_from_pipeline_file("/home/lie/aiaa/ComputerVision/deeplearning/pipeline_config.config")
+configs = get_configs_from_pipeline_file(FLAGS.pipeline_config)
 
 input_config = configs["train_input_config"]
 model_config = configs["model_config"]
