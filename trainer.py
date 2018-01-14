@@ -79,6 +79,7 @@ def get_loss(logits,
           batcher: output of get_inputs
        Returns:
           loss: the combined loss for all labels
+          scalar_updates : any updates for keeping stats
     """
     batched_tensors = batcher.dequeue()
     predictions = logits(batched_tensors["input"])
@@ -96,7 +97,17 @@ def get_loss(logits,
     loss = tf.reduce_sum(losses,
                          name = "total_loss")
 
-    return loss
+    #get moving average
+    loss_avg = tf.train.ExponentialMovingAverage(0.9,name='moving_avg')
+    #get the moving average ops (create shadow variables)
+
+    loss_avg_op = loss_avg.apply([loss])
+    #log loss and shadow variables for avg loss
+    #tf.summary.scalar(loss.op.name+' (raw)',loss)
+    tf.summary.scalar(loss.op.name,loss_avg.average(loss))
+    scalar_updates = [loss_avg_op]
+
+    return loss, scalar_updates
 
 
 
@@ -104,14 +115,18 @@ configs = get_configs_from_pipeline_file("/home/lie/aiaa/ComputerVision/deeplear
 
 input_config = configs["train_input_config"]
 model_config = configs["model_config"]
-is_training = False
+train_config = configs["train_config"]
 
 
-classification_model = model_builder.build(model_config, is_training)
-batcher = get_inputs(input_config, classification_model.preprocess)
-loss = get_loss(classification_model.predict, batcher)
+with tf.name_scope('train'):
+    is_training = tf.placeholder_with_default(False,shape=(),name="is_training")
+    classification_model = model_builder.build(model_config, is_training)
+    batcher = get_inputs(input_config, classification_model.preprocess)
+    loss, scalar_updates = get_loss(classification_model.predict, batcher)
+    optimizer = tf.train.AdamOptimizer(0.01)
 
-#train_coord = training_coordinator.TrainingCoordinator(train_config,
-#                                                       loss,
-#                                                       scalar_updates,
-#                                                       optimizer)
+train_coord = training_coordinator.TrainingCoordinator().\
+                    train(train_config,
+                          loss,
+                          scalar_updates,
+                          optimizer)
