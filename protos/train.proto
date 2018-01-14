@@ -29,7 +29,7 @@ message TrainConfig {
 
   //use has the option of either specifying which to exclude from the fine-tune
   //or which to include
-  optional string exclude_from_fine_tune = 8 [default=""];
+  repeated string exclude_from_fine_tune = 8;
 
   repeated RestoredVariableScope include_from_fine_tune =9;
 
@@ -41,7 +41,7 @@ message TrainConfig {
   optional uint32 num_steps = 11 [default=0];
 
   // Variables or Scopes that should not be updated during training.
-  repeated string scope_or_variables_to_train = 12;
+  repeated string scopes_or_variables_to_train = 12;
 
   //update ops to use
   repeated string scopes_or_names_for_update_ops = 13;
