@@ -26,6 +26,7 @@ class PreFetchBatcher(batcher.Batcher):
         names = list(tensor_dict.keys())
         dtypes = [t.dtype for t in tensor_dict.values()]
         shapes = [t.get_shape() for t in tensor_dict.values()]
+
         prefetch_queue = tf.FIFOQueue(self._batch_capacity,
                                     dtypes=dtypes,
                                     shapes=shapes,
