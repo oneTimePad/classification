@@ -28,7 +28,7 @@ def get_configs_from_pipeline_file(pipeline_config_path):
 
   configs = {}
   configs["model_config"] = pipeline_config.model
- # configs["train_config"] = pipeline_config.train_config
+  configs["train_config"] = pipeline_config.train_config
   configs["train_input_config"] = pipeline_config.train_input_reader
  # configs["eval_config"] = pipeline_config.eval_config
  # configs["eval_input_config"] = pipeline_config.eval_input_reader
@@ -46,4 +46,4 @@ is_training = False
 decoded_tensors = input_reader_builder.build(input_config)
 classification_model = model_builder.build(model_config,is_training)
 
-import pdb;pdb.set_trace()
+#import pdb;pdb.set_trace()
