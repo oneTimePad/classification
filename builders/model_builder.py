@@ -1,8 +1,7 @@
-
+import tensorflow as tf
 from classification import fields
 from classification.builders.feature_extractor_map import NAME_TO_FEATURE_EXTRACTOR
 from classification.protos import model_pb2
-
 def generate_logits(pre_logits,
                     filter_map,
                     reuse):
@@ -30,12 +29,12 @@ def generate_logits(pre_logits,
     logits = {}
 
     with tf.variable_scope('logits',reuse=reuse):
-        for label, filters  in filter_map:
+        for label, filters  in filter_map.items():
             layer = tf.layers.conv2d(pre_logits,
                                      kernel_initializer=tf.contrib.layers.variance_scaling_initializer(),
     				                 kernel_size=kernel_size,
                                      strides=1,
-                                     filters=filter_map,padding='VALID',name=label)
+                                     filters=filters,padding='VALID',name=label)
             logits[label] = tf.squeeze(layer)
 
     return logits
@@ -56,21 +55,26 @@ def build(model_config,
     if not isinstance(model_config,model_pb2.Model):
         raise ValueError('model_build_config not type'
                         'model_pb2.Model')
-    model = NAME_TO_FEATURE_EXTRACTOR[model_config.extractor]
-    built_model = model(is_training,reuse)
+    Model = NAME_TO_FEATURE_EXTRACTOR[model_config.extractor]
+    built_model = Model(is_training,reuse)
 
     label_to_classes = {
                     entry.name :
                         entry.num for entry in model_config.multi_task_label
     }
 
-    def logit_wrapper(pre_logits):
+    #hook predict function from feature_extractor to add logits
+    def logit_wrapper(predict_fn):
         nonlocal label_to_classes
         nonlocal reuse
-
-        return generate_logits(pre_logits,label_to_classes,reuse)
+        def logits(*args,**kwargs):
+            return generate_logits(
+                         predict_fn(*args, **kwargs),
+                         label_to_classes,
+                         reuse)
+        return logits
 
     #create hook to generate logits
-    built_model.predict = logit_wrapper
+    Model.predict = logit_wrapper(Model.predict)
 
     return built_model
