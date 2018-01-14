@@ -2,6 +2,8 @@ import os
 from functools import reduce
 import operator
 import tensorflow as tf
+import tensorflow.contrib.slim as slim
+from classification.coordinators import logger_hook
 from classification.protos import train_pb2
 class TrainingCoordinator(object):
     def __init__(self):
@@ -29,7 +31,7 @@ class TrainingCoordinator(object):
 
         if train_config.eval_while_training and not eval_ops_dict:
             raise ValueError("Can't eval and train without eval ops")
-        import pdb;pdb.set_trace()
+
         fine_tune = False
         """Check whether classification ckpt dir exists. If not create it"""
         if not os.path.exists(
@@ -49,7 +51,9 @@ class TrainingCoordinator(object):
 
         if fine_tune and os.path.exists(train_config.fine_tune_checkpoint):
             if train_config.exclude_from_fine_tune:
-                vars_to_restore = slim.get_variables_to_restore(exclude=train_config.exclude_from_fine_tune)
+                exclude_list = ['train/total_loss','Logits']
+                exclude_list+=list(train_config.exclude_from_fine_tune)
+                vars_to_restore = slim.get_variables_to_restore(exclude = exclude_list)
             else:
                 #TODO: map variables
                 pass
@@ -60,11 +64,12 @@ class TrainingCoordinator(object):
                                 for sublist in l
                                     for item in sublist]
 
-        if not train_config.scope_or_variables_to_train:
+        if not train_config.scopes_or_variables_to_train:
             raise ValueError("Nothing to train!")
+
         train_vars = [tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,
                                         scope = s)
-                          for s in train_config.scope_or_variables_to_train]
+                          for s in train_config.scopes_or_variables_to_train]
 
         update_ops = None
         #user must specify the scope
@@ -85,7 +90,7 @@ class TrainingCoordinator(object):
                 train_op = optimizer.minimize(loss,
                                               var_list = train_vars,
                                               global_step = self._global_step)
-        checkpoint_dir = os.path.join(train_conifg.from_classification_checkpoint,
+        checkpoint_dir = os.path.join(train_config.from_classification_checkpoint,
                                      'model_ckpt')
 
         config = tf.ConfigProto()
@@ -106,5 +111,6 @@ class TrainingCoordinator(object):
                 mon_sess.run(pre_ops)
 
             print("TENSORFLOW INFO: Proceeding to training stage")
+
             while not mon_sess.should_stop():
-                mon_sess.run(train_op,feed_dict = {'is_training:0': True})
+                mon_sess.run(train_op,feed_dict = {'train/is_training:0': True})
