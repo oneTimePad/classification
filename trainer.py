@@ -2,9 +2,9 @@
 Modeled after the Tensorflow Object Detection API
 """
 import tensorflow as tf
-from classification.protos import pipeline_pb2
 from google.protobuf import text_format
-
+from classification.batchers import pre_fetch_batcher
+from classification.protos import pipeline_pb2
 from classification.builders import input_reader_builder
 from classification.builders import model_builder
 
@@ -28,13 +28,33 @@ def get_configs_from_pipeline_file(pipeline_config_path):
 
   configs = {}
   configs["model_config"] = pipeline_config.model
-  configs["train_config"] = pipeline_config.train_config
+  #configs["train_config"] = pipeline_config.train_config
   configs["train_input_config"] = pipeline_config.train_input_reader
  # configs["eval_config"] = pipeline_config.eval_config
  # configs["eval_input_config"] = pipeline_config.eval_input_reader
   return configs
 
+def get_input(input_config,preprocessor = None):
+    """Generate input pipeline
 
+       Args:
+            input_config: configuration for eval or training
+            preprocessor: the preprocessor method of the classification model
+       Returns:
+            batcher: the output of the total pipeline
+    """
+    #TODO: add support for data augmentation
+    decoded_tensors = input_reader_builder.build(input_config)
+
+    if preprocessor:
+        decoded_tensors['input'] = tf.map_fn(preprocessor,
+                                             decoded_tensors['input'])
+
+    batcher = pre_fetch_batcher.PreFetchBatcher(input_config. \
+                                    prefetch_queue_capacity). \
+                batch_examples(decoded_tensors)
+
+    return batcher
 
 
 configs = get_configs_from_pipeline_file("/home/lie/aiaa/ComputerVision/deeplearning/pipeline_config.config")
@@ -43,7 +63,6 @@ input_config = configs["train_input_config"]
 model_config = configs["model_config"]
 is_training = False
 
-decoded_tensors = input_reader_builder.build(input_config)
-classification_model = model_builder.build(model_config,is_training)
 
-#import pdb;pdb.set_trace()
+classification_model = model_builder.build(model_config,is_training)
+batcher = get_input(input_config,classification_model.preprocess)
