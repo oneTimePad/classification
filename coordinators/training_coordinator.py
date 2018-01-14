@@ -6,7 +6,7 @@ class TrainingCoordinator(object):
         self._global_step = tf.train.get_or_create_global_step()
 
     def train(self,
-              train_input_config,
+              train_config,
               loss,
               scalar_updates,
               optimizer,
@@ -15,12 +15,13 @@ class TrainingCoordinator(object):
         """Coordinates the Training stage
 
             Args:
-                train_input_config: protobuf configuration for training
+                train_config: protobuf configuration for training
                 loss: loss defined by FeatureExtractor
                 scalar_updates: any scalar update ops to peform while training
                 optimizer: the optimizer to use for training
+                eval_ops_dict: a dict mapping format strings to evaluation operations
                 pre_ops: any operations to before before training after restoring
-
+        """
         if not isinstance(train_config, train_pb2.TrainConfig):
             raise ValueError('train_config not type'
                              'train_pb2.TrainConfig.')
@@ -33,14 +34,14 @@ class TrainingCoordinator(object):
         if not os.path.exists(
                         os.path.join(train_conifg.from_classification_checkpoint,
                                     'model_ckpt')):
-            print("Classification Checkpoint doesn't exist. Created 'model_ckpt'. ")
+            print("TENSORFLOW INFO: Classification Checkpoint doesn't exist. Created 'model_ckpt'. ")
             os.mkdir(
                     os.path.join(train_conifg.from_classification_checkpoint,
                                 'model_ckpt'))
             #we must be fine tuning
             fine_tune = True
         else:
-            print("Classification Checkpoint exists...restoring from it.")
+            print("TENSORFLOW INFO: Classification Checkpoint exists...restoring from it.")
 
         #this however will restore all variables if nothing is specified
         vars_to_restore = None
