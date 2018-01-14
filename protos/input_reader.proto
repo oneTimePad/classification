@@ -41,6 +41,9 @@ message InputReader {
   optional bool eval_batch_mode = 13 [default=false];
 
   required int64 num_examples = 14;
+
+  //number of batches in FIFO prefetch queue
+  optional prefetch_queue_capacity = 15 [default=5];
 }
 
 // An input reader that reads TF Example protos from local TFRecord files.
