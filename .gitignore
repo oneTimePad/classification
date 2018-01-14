@@ -1,5 +1,6 @@
-protos/__pycache__/_
-extractors/__pycache__/
+*/*.pyc
+*/*_pb2.py
 batchers/__pycache__/
-protos/*.pb2
-__pycache__/*
+protos/__pycache__/
+extractors/__pycache__/
+coordinators/__pycache__/
