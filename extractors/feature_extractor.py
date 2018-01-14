@@ -26,16 +26,6 @@ class FeatureExtractor(object):
         pass
 
     @abstractmethod
-    def get_restore_variables(self):
-        """
-            Variables to restore
-
-            Returns:
-                vars_to_restore
-        """
-        pass
-
-    @abstractmethod
     def preprocess(self,image):
         """
         Preprocess inputs before going into model
@@ -56,18 +46,5 @@ class FeatureExtractor(object):
             preprocessed_inputs: processed batch to go to model
         Returns:
             logits: dict of logits keys by strings in fields.InputDataFields.labels
-        """
-        pass
-
-    @abstractmethod
-    def loss(self,labels):
-        """
-        Defines the model's loss
-
-        Args:
-            labels from input pipepline
-
-        Returns:
-            loss
         """
         pass

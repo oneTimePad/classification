@@ -4,12 +4,6 @@ import tensorflow.contrib.slim as slim
 from tensorflow.contrib.slim.nets import inception
 class InceptionV3FeatureExtractor(feature_extractor.FeatureExtractor):
 
-    def get_trainable_variables(self):
-        pass
-
-    def get_update_ops(self):
-        pass
-
     def get_pre_ops(self):
         pass
 
