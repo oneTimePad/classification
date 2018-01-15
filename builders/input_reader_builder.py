@@ -92,7 +92,7 @@ def build(input_reader_config):
 
         decoder = tf_exam.MultiTaskTfExamplesDecoder(
             input_reader_config.multi_task_label_name,
-            (input_reader_config.image_height,input_reader_config.image_width))
+            (input_reader_config.image_height,input_reader_config.image_width,input_reader_config.image_channels))
 
         return decoder.decode(batcher,batcher["batch_size"])
 
