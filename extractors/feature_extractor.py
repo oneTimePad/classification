@@ -45,6 +45,6 @@ class FeatureExtractor(object):
         Args:
             preprocessed_inputs: processed batch to go to model
         Returns:
-            logits: dict of logits keys by strings in fields.InputDataFields.labels
+            pre_logits: layer activation right before the logit layer
         """
         pass
