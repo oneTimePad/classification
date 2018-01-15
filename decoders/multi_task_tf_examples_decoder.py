@@ -18,7 +18,7 @@ class MultiTaskTfExamplesDecoder(object):
                 label : tf.FixedLenFeature([],tf.int64)
             })
 
-        self._image_height, self._image_width = image_spatial_size
+        self._image_height, self._image_width, self._channels = image_spatial_size
 
     def decode(self,batched_serialized_tensors,batch_size):
         """Decodes the input from batch of serialized tensors
@@ -41,7 +41,7 @@ class MultiTaskTfExamplesDecoder(object):
         image_float = tf.reshape(image_float,[batch_size,
                                               self._image_height,
                                               self._image_width,
-                                              3])
+                                              self._channels])
         image_float.set_shape([batch_size,
                                self._image_height,
                                self._image_width,
