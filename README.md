@@ -14,3 +14,22 @@ TensorFlow Classification API
 ` from outside classification dir
   3) cd in to classification directory and run ``export PYTHONPATH=`pwd`:$PYTHONPATH ``
   4) from outside classification dir run `python3 classification/trainer.py --pipeline_config {path_to_pipeline_config}`
+
+## Data Format
+  This API utilizes TFRecord Format. There is a serializer in serializers that expects your data in the following format.
+  
+          inputs_dir/images ->
+                    {prefix}_{imagenumber}.{image_file_extension}
+        inputs_dir/annotations ->
+            inputs_dir/annotations.json :
+                    {
+                        {annotation_1} : {category_name: category_byte, ...},
+                        {annotation_2} : {category_name: category_byte, ...},
+                        ...
+                    }
+            inputs_dir/labels/{prefix}_{imagenumber}.json:
+                    {
+                        {annotation_1} : {category_name},
+                        {annotation_2} : {category_name},
+                        ...
+                    }
