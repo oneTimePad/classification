@@ -18,7 +18,7 @@ TensorFlow Classification API
 ## Data Format
   This API utilizes TFRecord Format. There is a serializer in serializers that expects your data in the following format.
   
-          inputs_dir/images ->
+          inputs_dir/images:
                     {image_name}.{image_file_extension}
           inputs_dir/labels/{image_name}.json:
                   {
@@ -26,7 +26,7 @@ TensorFlow Classification API
                       {annotation_2} : {category_name},
                       ...
                   }
-           inputs_dir/annotations.json (mapping between string label and number) :
+           inputs_dir/annotations.json (mapping between string label and number):
                   {
                       {annotation_1} : {category_name: category_byte, ...},
                       {annotation_2} : {category_name: category_byte, ...},
