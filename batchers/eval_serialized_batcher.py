@@ -42,7 +42,7 @@ class EvalSerializerBatcher(batcher.Batcher):
         batch_dict = tf.train.batch({fields.InputDataFields.serialized:
                                      serialized_examples},
                                 self._batch_size,
-			                    capacity = slef._batch_capacity,
+			                    capacity = self._batch_capacity,
 			                    num_threads = self._num_threads,
                                 name = self._name)
         self._set_batch_size_to_dict(batch_dict)
