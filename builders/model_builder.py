@@ -52,6 +52,7 @@ def build(model_config,
        Returns:
         FeatureExtractor object
     """
+
     if not isinstance(model_config,model_pb2.Model):
         raise ValueError('model_build_config not type'
                         'model_pb2.Model')
@@ -67,13 +68,17 @@ def build(model_config,
     def logit_wrapper(predict_fn):
         nonlocal label_to_classes
         nonlocal reuse
+
         def logits(*args,**kwargs):
+            #undo hook
+            Model.predict = Model._predict
             return generate_logits(
                          predict_fn(*args, **kwargs),
                          label_to_classes,
                          reuse)
         return logits
-
+    #save original
+    Model._predict = Model.predict
     #create hook to generate logits
     Model.predict = logit_wrapper(Model.predict)
 

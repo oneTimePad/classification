@@ -75,13 +75,13 @@ def build(input_reader_config):
                         batch_examples(string_tensor)
 
         elif not input_reader_config.eval_batch_mode:
-            batcher = batchersEvalSerializerBatcher(num_examples).\
+            batcher = eval_serialized_batcher.EvalSerializerBatcher(num_examples).\
                         batch_examples(string_tensor)
 
         elif input_reader_config.eval_batch_mode:
             if not input_reader_config.batch_size:
                 raise ValueError('batch_size must be specified when doing batched eval.')
-            batcher = batchers.BatchEvalSerializedBatcher(batch_size,
+            batcher = batched_eval_serialized_batcher.BatchEvalSerializedBatcher(batch_size,
                               num_examples,
                               fraction_of_examples_in_queue,
                               num_batches_past_min_queue_size).\
