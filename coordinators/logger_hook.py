@@ -1,5 +1,6 @@
 import tensorflow as tf
 import time
+from datetime import datetime
 class LoggerHook(tf.train.SessionRunHook):
        def __init__(self,
                     eval_ops_dict,
@@ -14,8 +15,8 @@ class LoggerHook(tf.train.SessionRunHook):
                 self._eval_fmt_str = ""
                 self._eval_ops = []
                 for k,v in eval_ops_dict.items():
-                    self._eval_fmt_str+=append(k)
-                    self._eval_op.append(v)
+                    self._eval_fmt_str += k
+                    self._eval_ops.append(v)
             else:
                 self._eval_ops = None
             self._log_frequency = log_frequency
