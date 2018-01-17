@@ -8,6 +8,7 @@ from classification.protos import pipeline_pb2
 from classification.builders import input_reader_builder
 from classification.builders import model_builder
 from classification.coordinators import training_coordinator
+import collections
 
 FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('pipeline_config',None,'')
@@ -33,8 +34,8 @@ def get_configs_from_pipeline_file(pipeline_config_path):
   configs["model_config"] = pipeline_config.model
   configs["train_config"] = pipeline_config.train_config
   configs["train_input_config"] = pipeline_config.train_input_reader
- # configs["eval_config"] = pipeline_config.eval_config
- # configs["eval_input_config"] = pipeline_config.eval_input_reader
+  configs["eval_config"] = pipeline_config.eval_config
+  configs["eval_input_config"] = pipeline_config.eval_input_reader
   return configs
 
 def _xentropy_loss_op(logit,label,name):
@@ -102,12 +103,12 @@ def get_acc(predictions,
                 tensor for label, tensor in batched_tensors.items()
                             if label != "input"}
     for label, tensor in labels.items():
-        acc = _eval_ops(predictions[label],
-                                 tensor,
+        acc = _eval_op(predictions[label],
+                                 tensor-1,
                                  name=label)
         accs_dict[label] = acc
 
-    return accs
+    return accs_dict
 def get_loss(predictions,
              batched_tensors):
     """Generates combined loss and evaluation
@@ -125,7 +126,7 @@ def get_loss(predictions,
                             if label != "input"}
     for label, tensor in labels.items():
         loss = _xentropy_loss_op(predictions[label],
-                                 tensor,
+                                 tensor-1,
                                  name=label)
         tf.losses.add_loss(loss,
                             tf.GraphKeys.LOSSES)
@@ -152,14 +153,16 @@ if not FLAGS.pipeline_config:
 
 configs = get_configs_from_pipeline_file(FLAGS.pipeline_config)
 
+
 train_input_config = configs["train_input_config"]
 model_config = configs["model_config"]
 train_config = configs["train_config"]
+eval_config = configs["eval_config"]
 eval_input_config = configs["eval_input_config"]
 
 
-eval_ops = {}
-
+eval_ops_dict = collections.OrderedDict({})
+scalar_updates = []
 with tf.name_scope("train"):
     is_training = tf.placeholder_with_default(False,shape=(),name="is_training")
     classification_model = model_builder.build(model_config, is_training)
@@ -168,9 +171,10 @@ with tf.name_scope("train"):
     predictions = classification_model.predict(batched_tensors["input"])
     train_loss, train_scalar_updates = get_loss(predictions, batched_tensors)
     train_acc_dict = get_acc(predictions, batched_tensors)
-    eval_ops['loss %.2f'] = train_loss
+    scalar_updates += train_scalar_updates
+    eval_ops_dict['loss %.2f '] = train_loss
     for label in train_acc_dict:
-        eval_ops[label+"_acc %.2f"]
+        eval_ops_dict['train_'+label+"_acc %.2f "] = train_acc_dict[label]
     optimizer = tf.train.AdamOptimizer(0.01)
 
 if train_config.eval_while_training:
@@ -182,8 +186,13 @@ if train_config.eval_while_training:
         predictions = classification_model_test.predict(batched_tensors["input"])
         test_loss, test_scalar_updates = get_loss(predictions, batched_tensors)
         test_acc_dict = get_acc(predictions, batched_tensors)
+        scalar_updates += test_scalar_updates
+        for label in train_acc_dict:
+            eval_ops_dict['test_'+label+"_acc %.2f "] = test_acc_dict[label]
+import pdb;pdb.set_trace()
 train_coord = training_coordinator.TrainingCoordinator().\
                     train(train_config,
-                          loss,
+                          train_loss,
                           scalar_updates,
-                          optimizer)
+                          optimizer,
+                          eval_ops_dict = eval_ops_dict)
