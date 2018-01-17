@@ -51,6 +51,19 @@ def _xentropy_loss_op(logit,label,name):
 					logits=logit,
 					labels=label),name=name)
 
+def _eval_op(logits,label,name):
+	"""
+		Construct accuracy operation
+		Args:
+			logits -> output units of network rank 0
+			label  -> matching labels rank 0
+		return:
+	 		mean accuracy op
+	"""
+	with tf.name_scope(name):
+		return tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits,label,1),tf.float32))
+
+
 def get_inputs(input_config,preprocessor = None):
     """Generate input pipeline
 
@@ -73,19 +86,39 @@ def get_inputs(input_config,preprocessor = None):
 
     return batcher
 
-def get_loss(logits,
-             batcher):
-    """Generates combined losss
+
+def get_acc(predictions,
+            batched_tensors):
+    """Generates accuracy operations
 
        Args:
-          logits: last layer output of classification_model (from predict)
-          batcher: output of get_inputs
+             predictions: last layer output of classification_model (from predict)
+             batched_tensors: output of get_inputs
+       Returns:
+             accs_dict : dict mapping labels to accuracy operations
+    """
+    accs_dict = {}
+    labels = {label:
+                tensor for label, tensor in batched_tensors.items()
+                            if label != "input"}
+    for label, tensor in labels.items():
+        acc = _eval_ops(predictions[label],
+                                 tensor,
+                                 name=label)
+        accs_dict[label] = acc
+
+    return accs
+def get_loss(predictions,
+             batched_tensors):
+    """Generates combined loss and evaluation
+
+       Args:
+          predictions: last layer output of classification_model (from predict)
+          batched_tensors: output of get_inputs
        Returns:
           loss: the combined loss for all labels
           scalar_updates : any updates for keeping stats
     """
-    batched_tensors = batcher.dequeue()
-    predictions = logits(batched_tensors["input"])
     losses = []
     labels = {label:
                 tensor for label, tensor in batched_tensors.items()
@@ -113,23 +146,42 @@ def get_loss(logits,
     return loss, scalar_updates
 
 
+
 if not FLAGS.pipeline_config:
     raise ValueError("Must specify pipeline config file")
 
 configs = get_configs_from_pipeline_file(FLAGS.pipeline_config)
 
-input_config = configs["train_input_config"]
+train_input_config = configs["train_input_config"]
 model_config = configs["model_config"]
 train_config = configs["train_config"]
+eval_input_config = configs["eval_input_config"]
 
 
-with tf.name_scope('train'):
+eval_ops = {}
+
+with tf.name_scope("train"):
     is_training = tf.placeholder_with_default(False,shape=(),name="is_training")
     classification_model = model_builder.build(model_config, is_training)
-    batcher = get_inputs(input_config, classification_model.preprocess)
-    loss, scalar_updates = get_loss(classification_model.predict, batcher)
+    batcher = get_inputs(train_input_config, classification_model.preprocess)
+    batched_tensors = batcher.dequeue()
+    predictions = classification_model.predict(batched_tensors["input"])
+    train_loss, train_scalar_updates = get_loss(predictions, batched_tensors)
+    train_acc_dict = get_acc(predictions, batched_tensors)
+    eval_ops['loss %.2f'] = train_loss
+    for label in train_acc_dict:
+        eval_ops[label+"_acc %.2f"]
     optimizer = tf.train.AdamOptimizer(0.01)
 
+if train_config.eval_while_training:
+    with tf.name_scope("test"):
+        classification_model_test = model_builder.build(model_config,
+                                                         is_training = False,
+                                                         reuse = True)
+        batcher = get_inputs(eval_input_config, classification_model_test.preprocess)
+        predictions = classification_model_test.predict(batched_tensors["input"])
+        test_loss, test_scalar_updates = get_loss(predictions, batched_tensors)
+        test_acc_dict = get_acc(predictions, batched_tensors)
 train_coord = training_coordinator.TrainingCoordinator().\
                     train(train_config,
                           loss,
