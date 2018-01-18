@@ -2,7 +2,7 @@ syntax = "proto2";
 
 package classification.protos;
 
-//import "object_detection/protos/eval.proto";
+import "classification/protos/eval.proto";
 import "classification/protos/input_reader.proto";
 import "classification/protos/model.proto";
 import "classification/protos/train.proto";
@@ -13,6 +13,6 @@ message TrainEvalPipelineConfig {
   optional TrainConfig train_config = 2;
   optional Model model = 1;
   optional InputReader train_input_reader = 3;
-  //optional EvalConfig eval_config = 4;
-  //optional InputReader eval_input_reader = 5;
+  optional EvalConfig eval_config = 4;
+  optional InputReader eval_input_reader = 5;
 }
