@@ -7,8 +7,5 @@ message EvalConfig {
     //how many samples to run through evaluation
     required uint32 num_examples = 1;
     //where to restore from
-    required string checkpoint_dir = 2;
-    //whether we are running on subsamples at a time
-    required bool checkpoint_to_restore = 3;
-
+    required string checkpoint_to_restore = 2;
 }
