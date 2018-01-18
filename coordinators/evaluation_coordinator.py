@@ -1,12 +1,16 @@
 import tensorflow as tf
+from classification.protos import eval_pb2
+import tensorflow.contrib.slim as slim
 
 class EvaluationCoordinator(object):
 
     def __init__(self,
+                 eval_ops_dict,
                  is_batch_evaluation):
         """Coordinates an Evaluation Sesssion (not used for Eval while training)
 
            Args:
+            eval_ops_dict: a dict mapping format strings to evaluation operations
             is_batch_evaluation: whether we are running in batch mode
         """
         self._coord = tf.train.Coordinator()
@@ -16,17 +20,15 @@ class EvaluationCoordinator(object):
         self._eval_fmt_str = ""
 
         for fmt,op in eval_ops_dict.items():
-            self.eval_fmt_str+=fmt
-            self.eval_ops.append(op)
+            self._eval_fmt_str+=fmt
+            self._eval_ops.append(op)
 
-    def eval(self,
-            eval_config,
-            eval_ops_dict):
+    def evaluate(self,
+            eval_config):
             """Runs Evaluation ops on examples
 
                Args:
                 eval_config: protobuf config for evaluation
-                eval_ops_dict: a dict mapping format strings to evaluation operations
             """
             if not isinstance(eval_config, eval_pb2.EvalConfig):
                 raise ValueError('train_config not type'
@@ -43,7 +45,9 @@ class EvaluationCoordinator(object):
             print("TENSORFLOW INFO: Restoring from %s" % ckpt.model_checkpoint_path)
             with tf.Session() as sess:
                 init_local.run()
-                saver = tf.train.Saver() #TODO maybe allow var_list option?
+                exclude_list = ["eval/total_loss"]
+                vars_to_restore = slim.get_variables_to_restore(exclude = exclude_list)
+                saver = tf.train.Saver(var_list = vars_to_restore) #TODO maybe allow var_list option?
                 saver.restore(sess,ckpt.model_checkpoint_path)
 
                 #create and start Queue runners
@@ -59,7 +63,7 @@ class EvaluationCoordinator(object):
                         results = sess.run(self._eval_ops)
                         print(self._eval_fmt_str % tuple(results))
 
-                        if not self.is_batch_evaluation:
+                        if not self._is_batch_evaluation:
                             break
 
                 except Exception as e:
@@ -67,5 +71,5 @@ class EvaluationCoordinator(object):
 
                 finally:
                     self._coord.request_stop()
-                    self.coord.join(self._threads,
-                                    stop_grace_period = 10)
+                    self._coord.join(self._threads,
+                                     stop_grace_period_secs = 10)
