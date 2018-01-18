@@ -2,7 +2,7 @@
 TensorFlow Classification API
   Modeled after TensorFlow Object Detection API
 
-## Adding you own model
+## Adding your own model
   
   1) add your new model file to extractors (see inception_v3 example)
   2) have your model implement all the required methods and inherit FeatureExtractor
