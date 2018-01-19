@@ -109,12 +109,11 @@ class TrainingCoordinator(object):
                                                train_config.\
                                                    log_frequency)],
                                                config = config) as mon_sess:
-            if fine_tune:
+            if fine_tune and train_config.fine_tune_checkpoint:
                 saver.restore(mon_sess,train_config.fine_tune_checkpoint)
             if pre_ops:
                 mon_sess.run(pre_ops)
 
             print("TENSORFLOW INFO: Proceeding to training stage")
-
             while not mon_sess.should_stop():
                 mon_sess.run(train_op,feed_dict = {'train/is_training:0': True})
