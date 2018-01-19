@@ -33,5 +33,5 @@ class InceptionV3FeatureExtractor(feature_extractor.FeatureExtractor):
         """
         with slim.arg_scope(inception.inception_v3_arg_scope()):
               _,end_points = inception.inception_v3(
-    preprocessed_inputs,num_classes=1001,is_training=self._is_training,reuse=self._reuse)
+                  preprocessed_inputs,num_classes=1001,is_training=self._is_training,reuse=self._reuse)
         return end_points['PreLogits']
