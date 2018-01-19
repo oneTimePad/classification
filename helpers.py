@@ -72,13 +72,14 @@ class Helper:
                 batcher: the output of the total pipeline
         """
         #TODO: add support for data augmentation
-        decoded_tensors = input_reader_builder.build(input_config)
+        with tf.device('/cpu:0'):
+            decoded_tensors = input_reader_builder.build(input_config)
 
-        if preprocessor:
-            decoded_tensors['input'] = tf.map_fn(preprocessor,
+            if preprocessor:
+                decoded_tensors['input'] = tf.map_fn(preprocessor,
                                                  decoded_tensors['input'])
 
-        batcher = pre_fetch_batcher.PreFetchBatcher(input_config. \
+            batcher = pre_fetch_batcher.PreFetchBatcher(input_config. \
                                         prefetch_queue_capacity). \
                     batch_examples(decoded_tensors)
 
