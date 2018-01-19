@@ -65,12 +65,15 @@ class TrainingCoordinator(object):
                                 for sublist in l
                                     for item in sublist]
 
+        #if variables to train is not specified, just train them all
         if not train_config.scopes_or_variables_to_train:
-            raise ValueError("Nothing to train!")
+            train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
 
-        train_vars = [tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,
-                                        scope = s)
-                          for s in train_config.scopes_or_variables_to_train]
+        #if vars to train is specified, then just train those
+        else:
+          train_vars = [tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,
+                                          scope = s)
+                            for s in train_config.scopes_or_variables_to_train]
 
         update_ops = None
         #user must specify the scope
