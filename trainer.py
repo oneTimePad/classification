@@ -28,12 +28,15 @@ eval_input_config = configs["eval_input_config"]
 
 eval_ops_dict = collections.OrderedDict({})
 scalar_updates = []
+label_names = [label.name for label in model_config.multi_task_label ]
 """ Training Model """
 with tf.name_scope("train") as scope:
     is_training = tf.placeholder_with_default(False,shape=(),name="is_training")
 classification_model = model_builder.build(model_config, is_training)
 batcher = Helper.get_inputs(train_input_config, classification_model.preprocess)
 batched_tensors = batcher.dequeue()
+batched_tensors = {label: tensor for label,tensor in batched_tensors.items() if label in label_names or label == "input"}
+
 predictions = classification_model.predict(batched_tensors["input"])
 with tf.name_scope(scope):
     train_loss, train_scalar_updates = Helper.get_loss(predictions, batched_tensors)
@@ -50,6 +53,8 @@ if train_config.eval_while_training:
                                                      is_training = False,
                                                      reuse = True)
     batcher = Helper.get_inputs(eval_input_config, classification_model_test.preprocess)
+    batched_tensors = batcher.dequeue()
+    batched_tensors = {label: tensor for label,tensor in batched_tensors.items() if label in label_names or label == "input" }
     predictions = classification_model_test.predict(batched_tensors["input"])
     with tf.name_scope("test"):
         test_loss, test_scalar_updates = Helper.get_loss(predictions, batched_tensors)
