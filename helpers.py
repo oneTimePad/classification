@@ -79,11 +79,11 @@ class Helper:
                 decoded_tensors['input'] = tf.map_fn(preprocessor,
                                                  decoded_tensors['input'])
 
-            batcher = pre_fetch_batcher.PreFetchBatcher(input_config. \
-                                        prefetch_queue_capacity). \
-                    batch_examples(decoded_tensors)
+            #batcher = pre_fetch_batcher.PreFetchBatcher(input_config. \
+            #                            prefetch_queue_capacity). \
+            #        batch_examples(decoded_tensors)
 
-        return batcher
+        return decoded_tensors
 
     @staticmethod
     def get_acc(predictions,
