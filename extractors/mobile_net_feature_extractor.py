@@ -33,9 +33,8 @@ class MobileNetFeatureExtractor(feature_extractor.FeatureExtractor):
 		Returns:
 			pre_logits: layer right before the logits
 		"""
-
 		with slim.arg_scope(mobilenet_v1_arg_scope()):
 			_,end_points = mobilenet_v1(
 				preprocessed_inputs,num_classes=1001,is_training=self._is_training, reuse = self._reuse)
-		pre_logits = end_points['PreLogits']
+			pre_logits = end_points['PreLogits']
 		return pre_logits
