@@ -49,21 +49,25 @@ class TrainingCoordinator(object):
         #this however will restore all variables if nothing is specified
         vars_to_restore = None
 
-        if fine_tune and os.path.exists(train_config.fine_tune_checkpoint):
-            if train_config.exclude_from_fine_tune:
+        if fine_tune and train_config.fine_tune_checkpoint:
                 #things we always need to exclude
-                exclude_list = ["train/total_loss","test/total_loss","Logits",'eval']
-                exclude_list+=list(train_config.exclude_from_fine_tune)
+                exclude_list = ["train/total_loss","test_1/total_loss","Logits",'eval','global_step']
+                if train_config.exclude_from_fine_tune:
+                    exclude_list+=list(train_config.exclude_from_fine_tune)
                 vars_to_restore = slim.get_variables_to_restore(exclude = exclude_list)
-            else:
-                #TODO: map variables
-                pass
+                #TODO add restore from map
 
-        saver = tf.train.Saver(var_list = vars_to_restore)
+        saver = tf.train.Saver(var_list = vars_to_restore) if vars_to_restore else None
 
-        flatten = lambda l: [item
-                                for sublist in l
-                                    for item in sublist]
+        def flatten(l):
+            flat = []
+            for sublist in l:
+                if isinstance(sublist,list):
+                    for item in sublist:
+                        flat.append(item)
+                else:
+                    flat.append(sublist)
+            return flat
 
         #if variables to train is not specified, just train them all
         if not train_config.scopes_or_variables_to_train:
@@ -75,12 +79,12 @@ class TrainingCoordinator(object):
                                           scope = s)
                             for s in train_config.scopes_or_variables_to_train]
 
-        update_ops = None
+        train_vars = flatten(train_vars)
         #user must specify the scope
         if train_config.scopes_or_names_for_update_ops:
             update_ops = [tf.get_collection(tf.GraphKeys.UPDATE_OPS,
                                             scope = s)
-        for s in train_config.scopes_or_names_for_update_ops]
+                            for s in train_config.scopes_or_names_for_update_ops]
             update_ops = flatten(update_ops)
 
         if update_ops is not None:
@@ -109,7 +113,7 @@ class TrainingCoordinator(object):
                                                train_config.\
                                                    log_frequency)],
                                                config = config) as mon_sess:
-            if fine_tune and train_config.fine_tune_checkpoint:
+            if fine_tune and train_config.fine_tune_checkpoint and saver:
                 saver.restore(mon_sess,train_config.fine_tune_checkpoint)
             if pre_ops:
                 mon_sess.run(pre_ops)
