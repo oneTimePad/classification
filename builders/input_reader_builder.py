@@ -53,8 +53,11 @@ def build(input_reader_config):
         num_examples = input_reader_config.num_examples
         records = [os.path.join(config.input_path,f) for f in os.listdir(config.input_path)]
 
+        num_epochs = None
+        if input_reader_config.num_epochs !=0:
+            num_epochs = input_reader_config.num_epochs
         #doesn't control number of epochs very nicely
-        filenames_queue = tf.train.string_input_producer(records,shuffle=input_reader_config.shuffle,num_epochs=None)
+        filenames_queue = tf.train.string_input_producer(records,shuffle=input_reader_config.shuffle,num_epochs=num_epochs)
         reader = tf.TFRecordReader()
         _,string_tensor = reader.read(filenames_queue)
 
