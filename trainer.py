@@ -36,7 +36,7 @@ classification_model = model_builder.build(model_config, is_training)
 batcher = Helper.get_inputs(train_input_config, classification_model.preprocess)
 batched_tensors = batcher.dequeue()
 batched_tensors = {label: tensor for label,tensor in batched_tensors.items() if label in label_names or label == "input"}
-
+tf.summary.image("train",batched_tensors["input"])
 predictions = classification_model.predict(batched_tensors["input"])
 with tf.name_scope(scope):
     train_loss, train_scalar_updates = Helper.get_loss(predictions, batched_tensors)
@@ -49,12 +49,14 @@ optimizer = tf.train.AdamOptimizer(0.01)
 
 """ Testing Model """
 if train_config.eval_while_training:
-    classification_model_test = model_builder.build(model_config,
-                                                     is_training = False,
-                                                     reuse = True)
+    with tf.name_scope('eval'):
+        classification_model_test = model_builder.build(model_config,
+                                                         is_training = False,
+                                                         reuse = True)
     batcher = Helper.get_inputs(eval_input_config, classification_model_test.preprocess)
     batched_tensors = batcher.dequeue()
     batched_tensors = {label: tensor for label,tensor in batched_tensors.items() if label in label_names or label == "input" }
+    tf.summary.image("test",batched_tensors["input"])
     predictions = classification_model_test.predict(batched_tensors["input"])
     with tf.name_scope("test"):
         test_loss, test_scalar_updates = Helper.get_loss(predictions, batched_tensors)
