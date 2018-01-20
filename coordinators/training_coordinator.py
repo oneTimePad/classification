@@ -52,7 +52,7 @@ class TrainingCoordinator(object):
         if fine_tune and os.path.exists(train_config.fine_tune_checkpoint):
             if train_config.exclude_from_fine_tune:
                 #things we always need to exclude
-                exclude_list = ["train/total_loss","test/total_loss","Logits"]
+                exclude_list = ["train/total_loss","test/total_loss","Logits",'eval']
                 exclude_list+=list(train_config.exclude_from_fine_tune)
                 vars_to_restore = slim.get_variables_to_restore(exclude = exclude_list)
             else:
