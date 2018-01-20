@@ -87,12 +87,14 @@ class Helper:
 
     @staticmethod
     def get_acc(predictions,
-                batched_tensors):
+                batched_tensors,
+                starts_from):
         """Generates accuracy operations
 
            Args:
                  predictions: last layer output of classification_model (from predict)
                  batched_tensors: output of get_inputs
+                 starts_from: start label index
            Returns:
                  accs_dict : dict mapping labels to accuracy operations
         """
@@ -102,7 +104,7 @@ class Helper:
                                 if label != "input"}
         for label, tensor in labels.items():
             acc = _eval_op(predictions[label],
-                                     tensor-1,
+                                     tensor-starts_from[label],
                                      name=label)
             accs_dict[label] = acc
 
@@ -110,12 +112,14 @@ class Helper:
 
     @staticmethod
     def get_loss(predictions,
-                 batched_tensors):
+                 batched_tensors,
+                 starts_from):
         """Generates combined loss and evaluation
 
            Args:
               predictions: last layer output of classification_model (from predict)
               batched_tensors: output of get_inputs
+              starts_from: start label index
            Returns:
               loss: the combined loss for all labels
               scalar_updates : any updates for keeping stats
@@ -126,7 +130,7 @@ class Helper:
                                 if label != "input"}
         for label, tensor in labels.items():
             loss = _xentropy_loss_op(predictions[label],
-                                     tensor-1,
+                                     tensor-starts_from[label],
                                      name=label)
             tf.losses.add_loss(loss,
                                 tf.GraphKeys.LOSSES)
