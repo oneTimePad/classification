@@ -1,6 +1,7 @@
 message MultiTaskClass {
     required string name = 1;
     required int32 num  = 2;
+    optional int32 starts_from = 3 [default=1];
 
 }
 
