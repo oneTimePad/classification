@@ -51,4 +51,6 @@ message TrainConfig {
 
   //number of steps to log at
   optional int32 log_frequency = 15[default=10];
+
+  optional float learning_rate = 16[default=0.001];
 }
