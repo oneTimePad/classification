@@ -35,12 +35,9 @@ class TrainingCoordinator(object):
         fine_tune = False
         """Check whether classification ckpt dir exists. If not create it"""
         if not os.path.exists(
-            os.path.join(train_config.from_classification_checkpoint,
-                        'model_ckpt')):
-            print("TENSORFLOW INFO: Classification Checkpoint doesn't exist. Created 'model_ckpt'. ")
-            os.mkdir(
-                os.path.join(train_config.from_classification_checkpoint,
-                            'model_ckpt'))
+            os.path.join(train_config.from_classification_checkpoint)):
+            print("TENSORFLOW INFO: Classification Checkpoint doesn't exist. Created checkpoint dir. ")
+            os.mkdir(train_config.from_classification_checkpoint)
             #we must be fine tuning
             fine_tune = True
         else:
@@ -86,10 +83,9 @@ class TrainingCoordinator(object):
                                             scope = s)
                             for s in train_config.scopes_or_names_for_update_ops]
             update_ops = flatten(update_ops)
-
+        #update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         if update_ops is not None:
-            with tf.control_dependencies(reduce(operator.concat,
-                                               [scalar_updates,update_ops])):
+            with tf.control_dependencies(reduce(operator.concat,[scalar_updates,update_ops])):
                 train_op = optimizer.minimize(loss,
                                               var_list = train_vars,
                                               global_step = self._global_step)
@@ -98,12 +94,12 @@ class TrainingCoordinator(object):
                 train_op = optimizer.minimize(loss,
                                               var_list = train_vars,
                                               global_step = self._global_step)
-        checkpoint_dir = os.path.join(train_config.from_classification_checkpoint,
-                                     'model_ckpt')
+        checkpoint_dir = train_config.from_classification_checkpoint
 
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
 
+        file_writer = tf.summary.FileWriter(checkpoint_dir,tf.get_default_graph())
         with tf.train.MonitoredTrainingSession(save_checkpoint_secs = train_config.\
                                                                           keep_checkpoint_every_n_minutes*60,
                                                checkpoint_dir = checkpoint_dir,
@@ -117,7 +113,9 @@ class TrainingCoordinator(object):
                 saver.restore(mon_sess,train_config.fine_tune_checkpoint)
             if pre_ops:
                 mon_sess.run(pre_ops)
-
+            for v in train_vars:
+                print(v.name)
             print("TENSORFLOW INFO: Proceeding to training stage")
             while not mon_sess.should_stop():
                 mon_sess.run(train_op,feed_dict = {'train/is_training:0': True})
+                #print(mon_sess.run(tf.get_default_graph().get_tensor_by_name("MobilenetV1/Conv2d_5_depthwise/depthwise_weights:0")))
