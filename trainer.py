@@ -52,10 +52,10 @@ optimizer = tf.train.AdamOptimizer(train_config.learning_rate)
 
 """ Testing Model """
 if train_config.eval_while_training:
-    with tf.name_scope('eval'):
-        classification_model_test = model_builder.build(model_config,
-                                                         is_training = False,
-                                                         reuse = True)
+    #with tf.name_scope('eval'):
+    classification_model_test = model_builder.build(model_config,
+                                                     is_training = False,
+                                                     reuse = True)
     batcher = Helper.get_inputs(eval_input_config, classification_model_test.preprocess)
     batched_tensors = batcher#batcher.dequeue()
     batched_tensors = {label: tensor for label,tensor in batched_tensors.items() if label in label_names or label == "input" }
