@@ -18,7 +18,7 @@ from classification.protos import input_reader_pb2
 from classification.batchers import train_serialized_batcher
 from classification.batchers import eval_serialized_batcher
 from classification.batchers import batched_eval_serialized_batcher
-#import pdb;pdb.set_trace()
+
 
 
 parallel_reader = tf.contrib.slim.parallel_reader
@@ -36,7 +36,6 @@ def build(input_reader_config):
         ValueError: On invalid input reader proto
         ValueError: If no input paths are specified
     """
-    #import pdb;pdb.set_trace()
     if not isinstance(input_reader_config, input_reader_pb2.InputReader):
         raise ValueError('input_reader_config not type'
                          'input_reader_pb2.InputReader.')
