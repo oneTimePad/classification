@@ -121,6 +121,17 @@ class Helper:
 			scalar_updates.append(acc_avg_op)
 
 
+		'''does the total acc summary stuff'''
+		sum_acc = 0.0
+		for k, v in accs_dict.items():
+			sum_acc += v
+
+        acc_avg = tf.train.ExponentialMovingAverage(0.9,name='moving_avg')
+        acc_avg_op = acc_avg.apply([sum_acc])
+
+        tf.summary.scalar('SUM_ACC',acc_avg.average(sum_acc))
+        scalar_updates.append(acc_avg_op)
+
 
         return accs_dict, scalar_updates
 
