@@ -13,10 +13,13 @@ def _xentropy_loss_op(logit,label,name):
 		return:
 	 		mean cross entropy
 	"""
-	return tf.reduce_mean(
-				tf.nn.sparse_softmax_cross_entropy_with_logits(
-					logits=logit,
-					labels=label),name=name)
+	with tf.name_scope("LOSS"):
+		loss = tf.reduce_mean(
+					tf.nn.sparse_softmax_cross_entropy_with_logits(
+						logits=logit,
+						labels=label),name=name)
+	tf.summary.scalar("LOSS", loss)
+	return loss
 
 def _eval_op(logits,label,name):
 	"""
@@ -24,11 +27,15 @@ def _eval_op(logits,label,name):
 		Args:
 			logits -> output units of network rank 0
 			label  -> matching labels rank 0
+      		name   -> name scope of evaluation op
 		return:
 	 		mean accuracy op
 	"""
 	with tf.name_scope(name):
-		return tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits,label,1),tf.float32))
+		accuracy = tf.reduce_mean(tf.cast(tf.nn.in_top_k(logits,label,1),tf.float32))
+
+	tf.summary.scalar("ACCURACY", accuracy)
+	return accuracy
 
 
 class Helper:
@@ -94,8 +101,10 @@ class Helper:
                  batched_tensors: output of get_inputs
            Returns:
                  accs_dict : dict mapping labels to accuracy operations
+				 scalar_updates : any updates for keeping stats
         """
         accs_dict = {}
+		scalar_updates = []
         labels = {label:
                     tensor for label, tensor in batched_tensors.items()
                                 if label != "input"}
@@ -105,7 +114,15 @@ class Helper:
                                      name=label)
             accs_dict[label] = acc
 
-        return accs_dict
+			acc_avg = tf.train.ExponentialMovingAverage(0.9, name='moving_avg')
+			acc_avg_op = acc_avg.apply([acc])
+
+			tf.summary.scalar('acc_for_' + str(label), acc_avg.average(acc))
+			scalar_updates.append(acc_avg_op)
+
+
+
+        return accs_dict, scalar_updates
 
     @staticmethod
     def get_loss(predictions,
@@ -142,5 +159,7 @@ class Helper:
         #tf.summary.scalar(loss.op.name+' (raw)',loss)
         tf.summary.scalar(loss.op.name,loss_avg.average(loss))
         scalar_updates = [loss_avg_op]
+
+		#TODO log the loss per label, right now we have the total loss
 
         return loss, scalar_updates
