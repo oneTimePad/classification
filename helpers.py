@@ -134,9 +134,10 @@ class Helper:
               batched_tensors: output of get_inputs
            Returns:
               loss: the combined loss for all labels
-              scalar_updates : any updates for keeping stats
+              scalar_updates : any updates for keeping stats   **last item in list is the total loss
         """
         losses = []
+		scalar_updates = []
         labels = {label:
                     tensor for label, tensor in batched_tensors.items()
                                 if label != "input"}
@@ -147,6 +148,14 @@ class Helper:
             tf.losses.add_loss(loss,
                                 tf.GraphKeys.LOSSES)
             losses.append(loss)
+
+			loss_avg = tf.train.ExponentialMovingAverage(0.9, name='moving_avg')
+			loss_avg_op = loss_avg.apply([loss])
+			tf.summary.scalar('loss_for_' + str(label), loss_avg.average(loss))
+			scalar_updates.append(loss_avg_op)
+
+
+		'''does the total loss summary stuff'''
         loss = tf.reduce_sum(losses,
                              name = "total_loss")
 
@@ -158,8 +167,6 @@ class Helper:
         #log loss and shadow variables for avg loss
         #tf.summary.scalar(loss.op.name+' (raw)',loss)
         tf.summary.scalar(loss.op.name,loss_avg.average(loss))
-        scalar_updates = [loss_avg_op]
-
-		#TODO log the loss per label, right now we have the total loss
+        scalar_updates.append(loss_avg_op)
 
         return loss, scalar_updates
