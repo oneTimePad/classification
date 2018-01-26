@@ -1,6 +1,6 @@
 # classification
 TensorFlow Classification API
-  Modeled after TensorFlow Object Detection API
+  Modeled after [TensorFlow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection)
 
 ## Adding your own model
   
