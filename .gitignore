@@ -13,3 +13,4 @@
 ./protos/pipeline_pb2.py
 ./protos/train_pb2.py
 ./protos/eval_pb2.py
+mnist_data/*
