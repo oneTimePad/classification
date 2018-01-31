@@ -4,21 +4,21 @@ from datetime import datetime
 class LoggerHook(tf.train.SessionRunHook):
        def __init__(self,
                     eval_ops_dict,
-                    log_frequency):
+                    log_frequency,
+                    global_step):
             """A hook that gets called at each training step
 
                Args:
                 eval_ops_dict: a dict mapping format strings to evaluation operations
                 log_frequency: how frequently to log evaluations to stdout
+                global_step: global_step variable
             """
+            self._eval_fmt_str = "step %d: "
+            self._eval_ops = [global_step]
             if eval_ops_dict:
-                self._eval_fmt_str = ""
-                self._eval_ops = []
                 for k,v in eval_ops_dict.items():
                     self._eval_fmt_str += k
                     self._eval_ops.append(v)
-            else:
-                self._eval_ops = None
             self._log_frequency = log_frequency
        def begin(self):
            """Called at the start of the training session"""
@@ -27,9 +27,8 @@ class LoggerHook(tf.train.SessionRunHook):
        def before_run(self,run_context):
            """Called before each training step"""
            self._step+=1
-           if self._eval_ops:
-               #change this if you want to reduce the number of times eval ops are ran
-               return tf.train.SessionRunArgs(self._eval_ops)
+           #change this if you want to reduce the number of times eval ops are ran
+           return tf.train.SessionRunArgs(self._eval_ops)
 
        def after_run(self,run_context,run_values):
            """Called after each training step"""
@@ -38,5 +37,5 @@ class LoggerHook(tf.train.SessionRunHook):
                current_time = time.time()
                duration = current_time - self._start_time
                self._start_time = current_time
-               print('TENSORFLOW INFO: %s: step %d ' %(datetime.now(),self._step),end='')
+               print('TENSORFLOW INFO: %s: ' %(datetime.now()),end='')
                print(self._eval_fmt_str % tuple(run_values.results))

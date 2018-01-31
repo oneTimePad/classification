@@ -107,7 +107,8 @@ class TrainingCoordinator(object):
                                                                                                  num_steps),
                                                logger_hook.LoggerHook(eval_ops_dict,
                                                train_config.\
-                                                   log_frequency)],
+                                                   log_frequency,
+                                                   self._global_step)],
                                                config = config) as mon_sess:
             if fine_tune and train_config.fine_tune_checkpoint and saver:
                 saver.restore(mon_sess,train_config.fine_tune_checkpoint)
