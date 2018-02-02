@@ -28,7 +28,7 @@ TensorFlow Classification API
                   }
            inputs_dir/annotations.json (mapping between string label and number):
                   {
-                      {annotation_1} : {category_name: category_byte, ...},
-                      {annotation_2} : {category_name: category_byte, ...},
+                      {annotation_1} : {category_name: category_int64, ...},
+                      {annotation_2} : {category_name: category_int64, ...},
                       ...
                   }
