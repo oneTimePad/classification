@@ -13,3 +13,6 @@
 ./protos/pipeline_pb2.py
 ./protos/train_pb2.py
 ./protos/eval_pb2.py
+__pycache__
+builders/__pycache__/*
+./protos/**_pb2.py
