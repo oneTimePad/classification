@@ -3,9 +3,6 @@ syntax = "proto2";
 package classification.protos;
 
 message InputReader {
-  // Path to StringIntLabelMap pbtxt file specifying the mapping from string
-  // labels to integer ids.
-  optional string label_map_path = 1 [default=""];
 
   // Whether data should be processed in the order they are read in, or
   // shuffled randomly.
