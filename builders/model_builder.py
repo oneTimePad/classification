@@ -15,6 +15,37 @@ def generate_logits(pre_logits,
       Returns:
         logits: dict mapping label to logits
     """
+
+    logits = {}
+
+    from functools import reduce
+    import operator
+    #validation on keys in filter_map and pre_logits (if dict)
+    if isinstance(pre_logits,dict) and not bool(reduce(operator.mul,[k in pre_logits for k in filter_map.keys()])):
+        raise Exception("Keys in PreLogits must match labels in proto file")
+
+    with tf.variable_scope('Logits',reuse=reuse):
+        for label, filters  in filter_map.items():
+            pre_logits_expanded, kernel_size = _kernel_size(pre_logits[label] if isinstance(pre_logits,dict) else pre_logits)
+            layer = tf.layers.conv2d(pre_logits_expanded,
+                                     kernel_initializer=tf.contrib.layers.variance_scaling_initializer(),
+    				                 kernel_size=kernel_size,
+                                     strides=1,
+                                     filters=filters,
+                                     padding='VALID',
+                                     name=label)
+            logits[label] = tf.squeeze(layer)
+
+    return logits
+
+def _kernel_size(pre_logits):
+    """Retrieve kernel size and expands input rank if necessary
+       Args:
+         pre_logits: Tensor
+       Returns:
+         pre_logits_expanded: pre_logits with increased rank
+         kernel_size: size of symmetric kernel
+    """
     tensor_rank = len(pre_logits.get_shape())
     #expand dims to rank 4 tensor if needed
     if tensor_rank < 4:
@@ -23,22 +54,9 @@ def generate_logits(pre_logits,
             pre_logits = tf.expand_dims(pre_logits,[1])
 
     #for full-connection table (i.e. mimics a fully-connected layer)
-
     kernel_size= int(pre_logits.get_shape()[1])
 
-    logits = {}
-
-    with tf.variable_scope('Logits',reuse=reuse):
-        for label, filters  in filter_map.items():
-            layer = tf.layers.conv2d(pre_logits,
-                                     kernel_initializer=tf.contrib.layers.variance_scaling_initializer(),
-    				                 kernel_size=kernel_size,
-                                     strides=1,
-                                     filters=filters,padding='VALID',name=label)
-            logits[label] = tf.squeeze(layer)
-
-    return logits
-
+    return pre_logits,kernel_size
 
 def build(model_config,
           is_training,

@@ -46,5 +46,6 @@ class FeatureExtractor(object):
             preprocessed_inputs: processed batch to go to model
         Returns:
             pre_logits: layer activation right before the logit layer
+                can be a Tensor or dict of tensors mapping labels to tensors
         """
         pass
