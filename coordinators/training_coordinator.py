@@ -119,4 +119,4 @@ class TrainingCoordinator(object):
                 print(v.name)
             print("TENSORFLOW INFO: Proceeding to training stage")
             while not mon_sess.should_stop():
-                mon_sess.run(train_op,feed_dict = {'train/is_training:0': True})
+                mon_sess.run(train_op,feed_dict = {'train/is_training:0':train_config.is_training})

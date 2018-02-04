@@ -53,4 +53,6 @@ message TrainConfig {
   optional int32 log_frequency = 15[default=10];
 
   optional float learning_rate = 16[default=0.001];
+
+  optional bool is_training = 17[default = true];
 }
