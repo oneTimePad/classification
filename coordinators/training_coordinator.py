@@ -78,12 +78,13 @@ class TrainingCoordinator(object):
 
         train_vars = flatten(train_vars)
         #user must specify the scope
-        if train_config.scopes_or_names_for_update_ops:
+        if train_config.scopes_or_names_for_update_ops is not None and train_config.scopes_or_names_for_update_ops != "all":
             update_ops = [tf.get_collection(tf.GraphKeys.UPDATE_OPS,
                                             scope = s)
                             for s in train_config.scopes_or_names_for_update_ops]
             update_ops = flatten(update_ops)
-        #update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        elif train_config.scopes_or_names_for_update_ops == "all":
+            update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         if update_ops is not None:
             with tf.control_dependencies(reduce(operator.concat,[scalar_updates,update_ops])):
                 train_op = optimizer.minimize(loss,
@@ -119,4 +120,3 @@ class TrainingCoordinator(object):
             print("TENSORFLOW INFO: Proceeding to training stage")
             while not mon_sess.should_stop():
                 mon_sess.run(train_op,feed_dict = {'train/is_training:0': True})
-                #print(mon_sess.run(tf.get_default_graph().get_tensor_by_name("MobilenetV1/Conv2d_5_depthwise/depthwise_weights:0")))

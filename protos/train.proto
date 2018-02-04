@@ -43,7 +43,7 @@ message TrainConfig {
   // Variables or Scopes that should not be updated during training.
   repeated string scopes_or_variables_to_train = 12;
 
-  //update ops to use
+  //update ops to use (specify "all" to use all update_ops)
   repeated string scopes_or_names_for_update_ops = 13;
 
   //whether to evaluate while training
