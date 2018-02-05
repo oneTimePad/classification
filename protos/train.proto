@@ -55,4 +55,7 @@ message TrainConfig {
   optional float learning_rate = 16[default=0.001];
 
   optional bool is_training = 17[default = true];
+
+  // some models perform better with this set to true
+  optional bool eval_while_training_is_training = 18[default=false];
 }

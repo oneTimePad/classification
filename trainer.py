@@ -54,7 +54,7 @@ optimizer = tf.train.AdamOptimizer(train_config.learning_rate)
 if train_config.eval_while_training:
     #with tf.name_scope('eval'):
     classification_model_test = model_builder.build(model_config,
-                                                     is_training = False,
+                                                     is_training = train_config.eval_while_training_is_training,
                                                      reuse = True)
     batcher = Helper.get_inputs(eval_input_config, classification_model_test.preprocess)
     batched_tensors = batcher#batcher.dequeue()
