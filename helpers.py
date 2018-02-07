@@ -111,15 +111,19 @@ class Helper:
         return accs_dict
 
     @staticmethod
-    def get_loss(predictions,
+def get_loss(predictions,
                  batched_tensors,
-                 starts_from):
+                 starts_from_dict, loss_string_dict, num_classes_dict):
+
         """Generates combined loss and evaluation
 
            Args:
               predictions: last layer output of classification_model (from predict)
               batched_tensors: output of get_inputs
               starts_from: start label index
+              starts_from_dict: start label index
+              loss_string_dict: dict mapping label name to loss string name
+      loss_config: inputted loss function
            Returns:
               loss: the combined loss for all labels
               scalar_updates : any updates for keeping stats
@@ -128,13 +132,21 @@ class Helper:
         labels = {label:
                     tensor for label, tensor in batched_tensors.items()
                                 if label != "input"}
+
+
+        loss_function_dict = {}
+        for key, value in loss_string_dict.items():
+            loss_function_dict[key] = losses_map.NAME_TO_LOSS_MAP[value]
+
+
+
         for label, tensor in labels.items():
-            loss = _xentropy_loss_op(predictions[label],
-                                     tensor-starts_from[label],
-                                     name=label)
+            loss = loss_function_dict[label](predictions[label], tensor-starts_from_dict[label], num_classes_dict[label])
+            loss = _loss_op(loss, name = label)
             tf.losses.add_loss(loss,
                                 tf.GraphKeys.LOSSES)
             losses.append(loss)
+
         loss = tf.reduce_sum(losses,
                              name = "total_loss")
 

@@ -32,6 +32,11 @@ label_names = [label.name
                     for label in model_config.multi_task_label ]
 starts_from = {label.name: label.starts_from
                     for label in model_config.multi_task_label}
+
+loss_dict = {label.name : label.loss_config for label in model_config.multi_task_label}
+num_classes_dict = {label.name : label.num for label in model_config.multi_task_label}
+
+
 """ Training Model """
 with tf.name_scope("train") as scope:
     is_training = tf.placeholder_with_default(False,shape=(),name="is_training")
@@ -42,7 +47,7 @@ batched_tensors = {label: tensor for label,tensor in batched_tensors.items() if 
 tf.summary.image("train",batched_tensors["input"])
 predictions = classification_model.predict(batched_tensors["input"])
 with tf.name_scope(scope):
-    train_loss, train_scalar_updates = Helper.get_loss(predictions, batched_tensors, starts_from)
+    train_loss, train_scalar_updates = Helper.get_loss(predictions, batched_tensors, starts_from, losses_dict, num_classes_dict)
     train_acc_dict = Helper.get_acc(predictions, batched_tensors, starts_from)
 scalar_updates += train_scalar_updates
 eval_ops_dict['loss %.2f '] = train_loss
@@ -62,7 +67,7 @@ if train_config.eval_while_training:
     tf.summary.image("test",batched_tensors["input"])
     predictions = classification_model_test.predict(batched_tensors["input"])
     with tf.name_scope("test"):
-        test_loss, test_scalar_updates = Helper.get_loss(predictions, batched_tensors, starts_from)
+        test_loss, test_scalar_updates = Helper.get_loss(predictions, batched_tensors, starts_from, losses_dict, num_classes_dict)
         test_acc_dict = Helper.get_acc(predictions, batched_tensors, starts_from)
     scalar_updates += test_scalar_updates
     for label in train_acc_dict:
