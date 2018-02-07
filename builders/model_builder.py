@@ -95,9 +95,11 @@ def build(model_config,
                          label_to_classes,
                          reuse)
         return logits
-    #save original
-    Model._predict = Model.predict
-    #create hook to generate logits
-    Model.predict = logit_wrapper(Model.predict)
+
+    if model_config.apply_logits:
+        #save original
+        Model._predict = Model.predict
+        #create hook to generate logits
+        Model.predict = logit_wrapper(Model.predict)
 
     return built_model

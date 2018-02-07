@@ -13,4 +13,5 @@ message Model {
     // Number of classes to predict.
     repeated MultiTaskClass multi_task_label = 2;
 
+    optional bool apply_logits = 3 [default=true];
 }
