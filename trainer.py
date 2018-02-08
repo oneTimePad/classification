@@ -53,7 +53,27 @@ scalar_updates += train_scalar_updates
 eval_ops_dict['loss %.2f '] = train_loss
 for label in train_acc_dict:
     eval_ops_dict['train_'+label+"_acc %.2f "] = train_acc_dict[label]
-optimizer = tf.train.AdamOptimizer(train_config.learning_rate)
+
+
+my_optimizer = train_config.optimizer.lower()
+string_to_optimizer_dict = {
+    "adam": tf.train.AdamOptimizer(),
+    "gradientdescent": tf.train.GradientDescentOptimizer(),
+    "adadelta": tf.train.AdadeltaOptimizer(),
+    "adagrad": tf.train.AdagradOptimizer(),
+    "adagradda": tf.train.AdagradDaOptimizer(),
+    "rmsprop": tf.train.RMSPropOptimizer(),
+    "ftrl": tf.train.FtrlOptimizer(),
+    "momentum": tf.train.MomentumOptimizer(),
+    "proximalgradientdescent": tf.train.ProximalGradientDescentOptimizer()
+}
+
+if my_optimizer == "momentum":
+    optimizer = tf.train.MomentumOptimizer(learning_rate=train_config.learning_rate, momentum=.9)
+
+else:
+    optimizer = string_to_optimizer_dict[my_optimizer](learning_rate=train_config.learning_rate)
+
 
 """ Testing Model """
 if train_config.eval_while_training:

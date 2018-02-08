@@ -18,8 +18,7 @@ message TrainConfig {
   // How frequently to keep checkpoints.
   optional uint32 keep_checkpoint_every_n_minutes = 4 [default=1];
 
-  // Optimizer used to train the DetectionModel.
-  //optional Optimizer optimizer = 5;
+  optional string optimizer = 5 [default="adam"];
 
   // If greater than 0, clips gradients by this value.
   //optional float gradient_clipping_by_norm = 6 [default=0.0];
