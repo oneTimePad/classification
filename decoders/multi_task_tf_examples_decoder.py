@@ -1,15 +1,13 @@
 import tensorflow as tf
 from classification import fields
 
-<<<<<<< HEAD
-=======
+
 TYPE_MAP = {
     "int64": tf.int64,
-    "float32": tf.float32,
+    "float32": tf.float32
     "string" : tf.string
 }
 
->>>>>>> 43c89f6... fix
 class MultiTaskTfExamplesDecoder(object):
 
     def __init__(self,multi_task_labels,image_spatial_size):
@@ -24,7 +22,7 @@ class MultiTaskTfExamplesDecoder(object):
 
         for label in multi_task_labels:
             self._keys_to_features.update({
-                label : tf.FixedLenFeature([],tf.int64)
+                label.name : tf.FixedLenFeature([],TYPE_MAP[label.dtype])
             })
 
         self._image_height, self._image_width, self._channels = image_spatial_size
@@ -44,11 +42,9 @@ class MultiTaskTfExamplesDecoder(object):
         #faster to decode tensors as a batch
         batched_decoded_tensors = tf.parse_example(batched_serialized_tensors[fields.InputDataFields.serialized],
                                                     self._keys_to_features)
-<<<<<<< HEAD
-=======
+
         #Decode and cast tensors if needed
-        for label in self._multi_task_labels:
-            tensor = batched_decoded_tensors[label.name]
+        for label, tensor in batched_decoded_tensors.items():
             #only strings need t obe decoded
             if label.dtype == "string":
                 if label.decodetype:
@@ -65,7 +61,6 @@ class MultiTaskTfExamplesDecoder(object):
             batched_decoded_tensors[label.name] = tensor
 
         #input is handlded separately
->>>>>>> 43c89f6... fix
         image_float = tf.cast(
                             tf.decode_raw(batched_decoded_tensors['input'],
                                           tf.uint8),

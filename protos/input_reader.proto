@@ -2,6 +2,16 @@ syntax = "proto2";
 
 package classification.protos;
 
+message LabelDescription {
+    required string name = 1;
+    // type of data coming in
+    optional string dtype =2 [default="int64"];
+    // type to cast to
+    optional string casttype=3 [default=""];
+    // used only for string data types when decoding
+    optional string decodetype =4 [default=""];
+}
+
 message InputReader {
 
   // Whether data should be processed in the order they are read in, or
@@ -29,7 +39,9 @@ message InputReader {
     ExternalInputReader external_input_reader = 9;
   }
 
-  repeated string multi_task_label_name = 10;
+
+
+  repeated LabelDescription multi_task_label_name = 10;
 
   required uint32 image_height = 11;
   required uint32 image_width = 12;
