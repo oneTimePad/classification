@@ -38,7 +38,7 @@ def _l2_loss_op(logit, label, num_classes):
     return:
      		mean l1
     """
-    label = tf.one_hot(label, num_classes)
+    #label = tf.one_hot(label, num_classes)
     return tf.square(logit-label)
 
 NAME_TO_LOSS_MAP = {

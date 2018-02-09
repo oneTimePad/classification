@@ -3,7 +3,8 @@ message MultiTaskClass {
     required int32 num  = 2;
     optional int32 starts_from = 3 [default=1];
     optional string loss_config = 4 [default="cross_entropy"];
-
+    optional bool has_accuracy = 5 [default=false];
+    optional bool apply_logits = 6 [default=false];
 }
 
 
@@ -12,6 +13,4 @@ message Model {
     required string extractor = 1;
     // Number of classes to predict.
     repeated MultiTaskClass multi_task_label = 2;
-
-    optional bool apply_logits = 3 [default=true];
 }
