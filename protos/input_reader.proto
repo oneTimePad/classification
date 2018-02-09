@@ -10,6 +10,8 @@ message LabelDescription {
     optional string casttype=3 [default=""];
     // used only for string data types when decoding
     optional string decodetype =4 [default=""];
+    // reshape the input data
+    repeated uint32 shape=5;
 }
 
 message InputReader {

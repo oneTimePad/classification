@@ -72,7 +72,7 @@ class MultiTaskTfExamplesDecoder(object):
         image_float.set_shape([batch_size,
                                self._image_height,
                                self._image_width,
-                               3])
+                               self._channels])
 
         batched_decoded_tensors['input'] = image_float
 
