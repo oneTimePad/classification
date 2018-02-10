@@ -4,6 +4,7 @@ from classification.builders.feature_extractor_map import NAME_TO_FEATURE_EXTRAC
 from classification.protos import model_pb2
 def generate_logits(pre_logits,
                     filter_map,
+                    apply_logits_map,
                     reuse):
     """Generates logits from pre logits of FeatureExtractor
 
@@ -26,15 +27,18 @@ def generate_logits(pre_logits,
 
     with tf.variable_scope('Logits',reuse=reuse):
         for label, filters  in filter_map.items():
-            pre_logits_expanded, kernel_size = _kernel_size(pre_logits[label] if isinstance(pre_logits,dict) else pre_logits)
-            layer = tf.layers.conv2d(pre_logits_expanded,
-                                     kernel_initializer=tf.contrib.layers.variance_scaling_initializer(),
-    				                 kernel_size=kernel_size,
-                                     strides=1,
-                                     filters=filters,
-                                     padding='VALID',
-                                     name=label)
-            logits[label] = tf.squeeze(layer)
+            if apply_logits_map[label]:
+                pre_logits_expanded, kernel_size = _kernel_size(pre_logits[label] if isinstance(pre_logits,dict) else pre_logits)
+                layer = tf.layers.conv2d(pre_logits_expanded,
+                                         kernel_initializer=tf.contrib.layers.variance_scaling_initializer(),
+        				                 kernel_size=kernel_size,
+                                         strides=1,
+                                         filters=filters,
+                                         padding='VALID',
+                                         name=label)
+                logits[label] = tf.squeeze(layer)
+            else:
+                logits[label] = pre_logits[label]
 
     return logits
 
@@ -82,9 +86,15 @@ def build(model_config,
                         entry.num for entry in model_config.multi_task_label
     }
 
+    label_to_apply_logits = {
+                    entry.name:
+                        entry.apply_logits for entry in model_config.multi_task_label
+    }
+
     #hook predict function from feature_extractor to add logits
     def logit_wrapper(predict_fn):
         nonlocal label_to_classes
+        nonlocal label_to_apply_logits
         nonlocal reuse
 
         def logits(*args,**kwargs):
@@ -93,13 +103,13 @@ def build(model_config,
             return generate_logits(
                          predict_fn(*args, **kwargs),
                          label_to_classes,
+                         label_to_apply_logits,
                          reuse)
         return logits
 
-    if model_config.apply_logits:
-        #save original
-        Model._predict = Model.predict
-        #create hook to generate logits
-        Model.predict = logit_wrapper(Model.predict)
+    #save original
+    Model._predict = Model.predict
+    #create hook to generate logits
+    Model.predict = logit_wrapper(Model.predict)
 
     return built_model

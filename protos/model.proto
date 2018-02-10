@@ -1,10 +1,10 @@
 message MultiTaskClass {
     required string name = 1;
-    required int32 num  = 2;
+    optional int32 num  = 2[default=0];
     optional int32 starts_from = 3 [default=1];
     optional string loss_config = 4 [default="cross_entropy"];
     optional bool has_accuracy = 5 [default=false];
-    optional bool apply_logits = 6 [default=false];
+    optional bool apply_logits = 6 [default=true];
 }
 
 

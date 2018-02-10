@@ -24,8 +24,8 @@ def _l1_loss_op(logit, label, num_classes):
     return:
      		mean l1
     """
-
-    label = tf.one_hot(label, num_classes)
+    if num_classes > 1:
+        label = tf.one_hot(label, num_classes)
     return tf.losses.absolute_difference(labels = label,
                                          predictions = logit)
 
@@ -38,7 +38,8 @@ def _l2_loss_op(logit, label, num_classes):
     return:
      		mean l1
     """
-    #label = tf.one_hot(label, num_classes)
+    if num_classes > 1:
+        label = tf.one_hot(label, num_classes)
     return tf.square(logit-label)
 
 NAME_TO_LOSS_MAP = {
