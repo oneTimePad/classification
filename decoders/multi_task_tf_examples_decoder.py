@@ -44,7 +44,7 @@ class MultiTaskTfExamplesDecoder(object):
                                                     self._keys_to_features)
 
         #Decode and cast tensors if needed
-        for label in multi_task_label:
+        for label in self._multi_task_labels:
             tensor = batched_decoded_tensors[label.name]
             #only strings need t obe decoded
             if label.dtype == "string":
