@@ -4,7 +4,7 @@ from classification import fields
 
 TYPE_MAP = {
     "int64": tf.int64,
-    "float32": tf.float32
+    "float32": tf.float32,
     "string" : tf.string
 }
 
