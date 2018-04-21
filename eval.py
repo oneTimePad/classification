@@ -44,6 +44,21 @@ eval_ops_dict['loss %.2f '] = eval_loss
 for label in eval_acc_dict:
     eval_ops_dict['eval_'+label+"_acc %.2f "] = eval_acc_dict[label]
 
+confusion_matrices = {}
+for label_name in batched_tensors.keys():
+    if label_name == "input":
+        continue
+    label = batched_tensors[label_name]
+    if starts_from[label_name] != 0:
+        label -= 1
+    logit = tf.argmax(predictions[label_name], axis = 1)
+    num_classes = num_classes_dict[label_name]
+
+    eval_ops_dict.update({'eval_'+label_name+"_confusion_matrix\n %s\n" : tf.confusion_matrix(label,
+                                                               logit,
+                                                               num_classes,
+                                                               name = "confusion_"+label_name)})
+
 evaluation_coordinator.EvaluationCoordinator(eval_ops_dict,
                                              eval_input_config.\
                                                 eval_batch_mode).\
