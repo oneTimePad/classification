@@ -83,6 +83,7 @@ class TrainingCoordinator(object):
                                             scope = s)
                             for s in train_config.scopes_or_names_for_update_ops]
             update_ops = flatten(update_ops)
+
         elif train_config.scopes_or_names_for_update_ops and train_config.scopes_or_names_for_update_ops[0] == "all":
             update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
 
@@ -96,6 +97,7 @@ class TrainingCoordinator(object):
                 train_op = optimizer.minimize(loss,
                                               var_list = train_vars,
                                               global_step = self._global_step)
+        print(update_ops)
         checkpoint_dir = train_config.from_classification_checkpoint
 
         config = tf.ConfigProto()

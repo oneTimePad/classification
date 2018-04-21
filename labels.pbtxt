@@ -69,6 +69,52 @@ label {
 }
 
 label {
+	name: "rotation_angle"
+	
+	item {
+	  id: 1,
+	  name: 'N'
+	}
+
+	item {
+	  id: 2,
+	  name: 'NW'
+	}
+
+	item {
+	  id: 3,
+	  name: 'W'
+	}
+
+	item {
+	  id: 4
+	  name: 'SW'
+	}
+
+	item {
+	  id: 5,
+	  name: 'S'
+	}
+
+	item {
+	  id: 6,
+	  name: 'SE'
+	}
+
+        item {
+	  id: 7,
+	  name: 'E'
+	
+	}
+
+	item {
+	  id: 8,
+	  name: 'NE'
+	}
+	
+}
+
+label {
 	name: 'alphanumeric'
 
 	item {

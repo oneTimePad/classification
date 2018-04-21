@@ -56,6 +56,7 @@ for label in train_acc_dict:
     eval_ops_dict['train_'+label+"_acc %.2f "] = train_acc_dict[label]
 optimizer = tf.train.AdamOptimizer(train_config.learning_rate)
 
+has_accuracy["rotation_angle"] = False
 """ Testing Model """
 if train_config.eval_while_training:
     #with tf.name_scope('eval'):
@@ -71,7 +72,7 @@ if train_config.eval_while_training:
         test_loss, test_scalar_updates = Helper.get_loss(predictions, batched_tensors, starts_from, losses_dict, num_classes_dict)
         test_acc_dict = Helper.get_acc(predictions, batched_tensors, starts_from, has_accuracy)
     scalar_updates += test_scalar_updates
-    for label in train_acc_dict:
+    for label in test_acc_dict:
         eval_ops_dict['test_'+label+"_acc %.2f "] = test_acc_dict[label]
 
 train_coord = training_coordinator.TrainingCoordinator().\
