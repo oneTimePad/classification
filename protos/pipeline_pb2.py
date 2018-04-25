@@ -13,16 +13,18 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
+import classification.protos.eval_pb2
 import classification.protos.input_reader_pb2
 import classification.protos.model_pb2
+import classification.protos.train_pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='classification/protos/pipeline.proto',
   package='classification.protos',
-  serialized_pb=_b('\n$classification/protos/pipeline.proto\x12\x15\x63lassification.protos\x1a(classification/protos/input_reader.proto\x1a!classification/protos/model.proto\"p\n\x17TrainEvalPipelineConfig\x12\x15\n\x05model\x18\x01 \x01(\x0b\x32\x06.Model\x12>\n\x12train_input_reader\x18\x02 \x01(\x0b\x32\".classification.protos.InputReader')
+  serialized_pb=_b('\n$classification/protos/pipeline.proto\x12\x15\x63lassification.protos\x1a classification/protos/eval.proto\x1a(classification/protos/input_reader.proto\x1a!classification/protos/model.proto\x1a!classification/protos/train.proto\"\xa1\x02\n\x17TrainEvalPipelineConfig\x12\x38\n\x0ctrain_config\x18\x02 \x01(\x0b\x32\".classification.protos.TrainConfig\x12\x15\n\x05model\x18\x01 \x01(\x0b\x32\x06.Model\x12>\n\x12train_input_reader\x18\x03 \x01(\x0b\x32\".classification.protos.InputReader\x12\x36\n\x0b\x65val_config\x18\x04 \x01(\x0b\x32!.classification.protos.EvalConfig\x12=\n\x11\x65val_input_reader\x18\x05 \x01(\x0b\x32\".classification.protos.InputReader')
   ,
-  dependencies=[classification.protos.input_reader_pb2.DESCRIPTOR,classification.protos.model_pb2.DESCRIPTOR,])
+  dependencies=[classification.protos.eval_pb2.DESCRIPTOR,classification.protos.input_reader_pb2.DESCRIPTOR,classification.protos.model_pb2.DESCRIPTOR,classification.protos.train_pb2.DESCRIPTOR,])
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
@@ -36,15 +38,36 @@ _TRAINEVALPIPELINECONFIG = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='model', full_name='classification.protos.TrainEvalPipelineConfig.model', index=0,
+      name='train_config', full_name='classification.protos.TrainEvalPipelineConfig.train_config', index=0,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='model', full_name='classification.protos.TrainEvalPipelineConfig.model', index=1,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='train_input_reader', full_name='classification.protos.TrainEvalPipelineConfig.train_input_reader', index=1,
-      number=2, type=11, cpp_type=10, label=1,
+      name='train_input_reader', full_name='classification.protos.TrainEvalPipelineConfig.train_input_reader', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='eval_config', full_name='classification.protos.TrainEvalPipelineConfig.eval_config', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='eval_input_reader', full_name='classification.protos.TrainEvalPipelineConfig.eval_input_reader', index=4,
+      number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -60,12 +83,15 @@ _TRAINEVALPIPELINECONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=140,
-  serialized_end=252,
+  serialized_start=210,
+  serialized_end=499,
 )
 
+_TRAINEVALPIPELINECONFIG.fields_by_name['train_config'].message_type = classification.protos.train_pb2._TRAINCONFIG
 _TRAINEVALPIPELINECONFIG.fields_by_name['model'].message_type = classification.protos.model_pb2._MODEL
 _TRAINEVALPIPELINECONFIG.fields_by_name['train_input_reader'].message_type = classification.protos.input_reader_pb2._INPUTREADER
+_TRAINEVALPIPELINECONFIG.fields_by_name['eval_config'].message_type = classification.protos.eval_pb2._EVALCONFIG
+_TRAINEVALPIPELINECONFIG.fields_by_name['eval_input_reader'].message_type = classification.protos.input_reader_pb2._INPUTREADER
 DESCRIPTOR.message_types_by_name['TrainEvalPipelineConfig'] = _TRAINEVALPIPELINECONFIG
 
 TrainEvalPipelineConfig = _reflection.GeneratedProtocolMessageType('TrainEvalPipelineConfig', (_message.Message,), dict(

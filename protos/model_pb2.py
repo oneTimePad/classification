@@ -18,7 +18,7 @@ _sym_db = _symbol_database.Default()
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='classification/protos/model.proto',
   package='',
-  serialized_pb=_b('\n!classification/protos/model.proto\"+\n\x0eMultiTaskClass\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0b\n\x03num\x18\x02 \x02(\x05\"E\n\x05Model\x12\x11\n\textractor\x18\x01 \x02(\t\x12)\n\x10multi_task_label\x18\x02 \x03(\x0b\x32\x0f.MultiTaskClass')
+  serialized_pb=_b('\n!classification/protos/model.proto\"\xa2\x01\n\x0eMultiTaskClass\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0e\n\x03num\x18\x02 \x01(\x05:\x01\x30\x12\x16\n\x0bstarts_from\x18\x03 \x01(\x05:\x01\x31\x12\"\n\x0bloss_config\x18\x04 \x01(\t:\rcross_entropy\x12\x1a\n\x0chas_accuracy\x18\x05 \x01(\x08:\x04true\x12\x1a\n\x0c\x61pply_logits\x18\x06 \x01(\x08:\x04true\"E\n\x05Model\x12\x11\n\textractor\x18\x01 \x02(\t\x12)\n\x10multi_task_label\x18\x02 \x03(\x0b\x32\x0f.MultiTaskClass')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -41,8 +41,36 @@ _MULTITASKCLASS = _descriptor.Descriptor(
       options=None),
     _descriptor.FieldDescriptor(
       name='num', full_name='MultiTaskClass.num', index=1,
-      number=2, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
+      number=2, type=5, cpp_type=1, label=1,
+      has_default_value=True, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='starts_from', full_name='MultiTaskClass.starts_from', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=True, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='loss_config', full_name='MultiTaskClass.loss_config', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=True, default_value=_b("cross_entropy").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='has_accuracy', full_name='MultiTaskClass.has_accuracy', index=4,
+      number=5, type=8, cpp_type=7, label=1,
+      has_default_value=True, default_value=True,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='apply_logits', full_name='MultiTaskClass.apply_logits', index=5,
+      number=6, type=8, cpp_type=7, label=1,
+      has_default_value=True, default_value=True,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -57,8 +85,8 @@ _MULTITASKCLASS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=37,
-  serialized_end=80,
+  serialized_start=38,
+  serialized_end=200,
 )
 
 
@@ -94,8 +122,8 @@ _MODEL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=82,
-  serialized_end=151,
+  serialized_start=202,
+  serialized_end=271,
 )
 
 _MODEL.fields_by_name['multi_task_label'].message_type = _MULTITASKCLASS

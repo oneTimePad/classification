@@ -60,16 +60,17 @@ for label_name in batched_tensors.keys():
                                                                name = "confusion_"+label_name)})
 
 
-    conf_tensor = eval_ops_dict['eval_' + label_name + '_confusion_matrix']
+    conf = eval_ops_dict['eval_' + label_name + '_confusion_matrix\n %s\n']
 
     #precision
     precisions = []
-    for col_i in range(len(conf[0])):
+    conf_shape = conf.get_shape()
+    for col_i in range(conf_shape[1]):
 
         actual_num = 0
         sum_num = 0
 
-        for row_i in range(len(conf)):
+        for row_i in range(conf_shape[0]):
 
             if row_i == col_i:
                 actual_num = conf[row_i][col_i]
@@ -79,17 +80,17 @@ for label_name in batched_tensors.keys():
         prec_this_class = actual_num / sum_num
         precisions.append(prec_this_class)
 
-    eval_ops_dict.update({'eval_' + label_name + '_precision': precisions})
+    eval_ops_dict.update({'eval_' + label_name + '_precision %s\n': precisions})
 
 
     #recall
     recalls = []
-    for row_i in range(len(conf)):
+    for row_i in range(conf_shape[1]):
 
         actual_num = 0
         sum_num = 0
 
-        for col_i in range(len(conf[0])):
+        for col_i in range(conf_shape[0]):
 
             if row_i == col_i:
                 actual_num = conf[row_i][col_i]
@@ -99,8 +100,8 @@ for label_name in batched_tensors.keys():
         recall_this_class = actual_num / sum_num
         recalls.append(recall_this_class)
 
-    eval_ops_dict.update({'eval_' + label_name + '_recall': recalls})
-        
+    eval_ops_dict.update({'eval_' + label_name + '_recall %s\n': recalls})
+
 
 
 

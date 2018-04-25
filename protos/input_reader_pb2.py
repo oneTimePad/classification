@@ -18,11 +18,69 @@ _sym_db = _symbol_database.Default()
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='classification/protos/input_reader.proto',
   package='classification.protos',
-  serialized_pb=_b('\n(classification/protos/input_reader.proto\x12\x15\x63lassification.protos\"\xa1\x03\n\x0bInputReader\x12\x18\n\x0elabel_map_path\x18\x01 \x01(\t:\x00\x12\x15\n\x07shuffle\x18\x02 \x01(\x08:\x04true\x12\x1c\n\x0equeue_capacity\x18\x03 \x01(\r:\x04\x32\x30\x30\x30\x12\x1f\n\x11min_after_dequeue\x18\x04 \x01(\r:\x04\x31\x30\x30\x30\x12\x15\n\nnum_epochs\x18\x05 \x01(\r:\x01\x30\x12\x16\n\x0bnum_readers\x18\x06 \x01(\r:\x01\x38\x12L\n\x16tf_record_input_reader\x18\x08 \x01(\x0b\x32*.classification.protos.TFRecordInputReaderH\x00\x12K\n\x15\x65xternal_input_reader\x18\t \x01(\x0b\x32*.classification.protos.ExternalInputReaderH\x00\x12\x1d\n\x15multi_task_label_name\x18\n \x03(\t\x12\x14\n\x0cimage_height\x18\x0b \x02(\r\x12\x13\n\x0bimage_width\x18\x0c \x02(\rB\x0e\n\x0cinput_reader\")\n\x13TFRecordInputReader\x12\x12\n\ninput_path\x18\x01 \x02(\t\"\x1c\n\x13\x45xternalInputReader*\x05\x08\x01\x10\xe8\x07')
+  serialized_pb=_b('\n(classification/protos/input_reader.proto\x12\x15\x63lassification.protos\"o\n\x10LabelDescription\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x14\n\x05\x64type\x18\x02 \x01(\t:\x05int64\x12\x12\n\x08\x63\x61sttype\x18\x03 \x01(\t:\x00\x12\x14\n\ndecodetype\x18\x04 \x01(\t:\x00\x12\r\n\x05shape\x18\x05 \x03(\r\"\xd0\x04\n\x0bInputReader\x12\x15\n\x07shuffle\x18\x02 \x01(\x08:\x04true\x12+\n\x1d\x66raction_of_examples_in_queue\x18\x03 \x01(\x02:\x04\x30.08\x12*\n\x1fnum_batches_past_min_queue_size\x18\x04 \x01(\x05:\x01\x33\x12\x15\n\nnum_epochs\x18\x05 \x01(\r:\x01\x30\x12\x16\n\x0bnum_threads\x18\x06 \x01(\r:\x01\x34\x12\x12\n\nbatch_size\x18\x07 \x02(\x05\x12L\n\x16tf_record_input_reader\x18\x08 \x01(\x0b\x32*.classification.protos.TFRecordInputReaderH\x00\x12K\n\x15\x65xternal_input_reader\x18\t \x01(\x0b\x32*.classification.protos.ExternalInputReaderH\x00\x12\x46\n\x15multi_task_label_name\x18\n \x03(\x0b\x32\'.classification.protos.LabelDescription\x12\x14\n\x0cimage_height\x18\x0b \x02(\r\x12\x13\n\x0bimage_width\x18\x0c \x02(\r\x12\x16\n\x0eimage_channels\x18\r \x02(\r\x12\x1e\n\x0f\x65val_batch_mode\x18\x0e \x01(\x08:\x05\x66\x61lse\x12\x14\n\x0cnum_examples\x18\x0f \x02(\x03\x12\"\n\x17prefetch_queue_capacity\x18\x10 \x01(\r:\x01\x35\x42\x0e\n\x0cinput_reader\")\n\x13TFRecordInputReader\x12\x12\n\ninput_path\x18\x01 \x02(\t\"\x1c\n\x13\x45xternalInputReader*\x05\x08\x01\x10\xe8\x07')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
+
+
+_LABELDESCRIPTION = _descriptor.Descriptor(
+  name='LabelDescription',
+  full_name='classification.protos.LabelDescription',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='classification.protos.LabelDescription.name', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='dtype', full_name='classification.protos.LabelDescription.dtype', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=True, default_value=_b("int64").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='casttype', full_name='classification.protos.LabelDescription.casttype', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=True, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='decodetype', full_name='classification.protos.LabelDescription.decodetype', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=True, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='shape', full_name='classification.protos.LabelDescription.shape', index=4,
+      number=5, type=13, cpp_type=3, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=67,
+  serialized_end=178,
+)
 
 
 _INPUTREADER = _descriptor.Descriptor(
@@ -33,44 +91,44 @@ _INPUTREADER = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='label_map_path', full_name='classification.protos.InputReader.label_map_path', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=True, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='shuffle', full_name='classification.protos.InputReader.shuffle', index=1,
+      name='shuffle', full_name='classification.protos.InputReader.shuffle', index=0,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=True, default_value=True,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='queue_capacity', full_name='classification.protos.InputReader.queue_capacity', index=2,
-      number=3, type=13, cpp_type=3, label=1,
-      has_default_value=True, default_value=2000,
+      name='fraction_of_examples_in_queue', full_name='classification.protos.InputReader.fraction_of_examples_in_queue', index=1,
+      number=3, type=2, cpp_type=6, label=1,
+      has_default_value=True, default_value=0.08,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='min_after_dequeue', full_name='classification.protos.InputReader.min_after_dequeue', index=3,
-      number=4, type=13, cpp_type=3, label=1,
-      has_default_value=True, default_value=1000,
+      name='num_batches_past_min_queue_size', full_name='classification.protos.InputReader.num_batches_past_min_queue_size', index=2,
+      number=4, type=5, cpp_type=1, label=1,
+      has_default_value=True, default_value=3,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='num_epochs', full_name='classification.protos.InputReader.num_epochs', index=4,
+      name='num_epochs', full_name='classification.protos.InputReader.num_epochs', index=3,
       number=5, type=13, cpp_type=3, label=1,
       has_default_value=True, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='num_readers', full_name='classification.protos.InputReader.num_readers', index=5,
+      name='num_threads', full_name='classification.protos.InputReader.num_threads', index=4,
       number=6, type=13, cpp_type=3, label=1,
-      has_default_value=True, default_value=8,
+      has_default_value=True, default_value=4,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='batch_size', full_name='classification.protos.InputReader.batch_size', index=5,
+      number=7, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -90,7 +148,7 @@ _INPUTREADER = _descriptor.Descriptor(
       options=None),
     _descriptor.FieldDescriptor(
       name='multi_task_label_name', full_name='classification.protos.InputReader.multi_task_label_name', index=8,
-      number=10, type=9, cpp_type=9, label=3,
+      number=10, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -109,6 +167,34 @@ _INPUTREADER = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='image_channels', full_name='classification.protos.InputReader.image_channels', index=11,
+      number=13, type=13, cpp_type=3, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='eval_batch_mode', full_name='classification.protos.InputReader.eval_batch_mode', index=12,
+      number=14, type=8, cpp_type=7, label=1,
+      has_default_value=True, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='num_examples', full_name='classification.protos.InputReader.num_examples', index=13,
+      number=15, type=3, cpp_type=2, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='prefetch_queue_capacity', full_name='classification.protos.InputReader.prefetch_queue_capacity', index=14,
+      number=16, type=13, cpp_type=3, label=1,
+      has_default_value=True, default_value=5,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -123,8 +209,8 @@ _INPUTREADER = _descriptor.Descriptor(
       name='input_reader', full_name='classification.protos.InputReader.input_reader',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=68,
-  serialized_end=485,
+  serialized_start=181,
+  serialized_end=773,
 )
 
 
@@ -153,8 +239,8 @@ _TFRECORDINPUTREADER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=487,
-  serialized_end=528,
+  serialized_start=775,
+  serialized_end=816,
 )
 
 
@@ -176,21 +262,30 @@ _EXTERNALINPUTREADER = _descriptor.Descriptor(
   extension_ranges=[(1, 1000), ],
   oneofs=[
   ],
-  serialized_start=530,
-  serialized_end=558,
+  serialized_start=818,
+  serialized_end=846,
 )
 
 _INPUTREADER.fields_by_name['tf_record_input_reader'].message_type = _TFRECORDINPUTREADER
 _INPUTREADER.fields_by_name['external_input_reader'].message_type = _EXTERNALINPUTREADER
+_INPUTREADER.fields_by_name['multi_task_label_name'].message_type = _LABELDESCRIPTION
 _INPUTREADER.oneofs_by_name['input_reader'].fields.append(
   _INPUTREADER.fields_by_name['tf_record_input_reader'])
 _INPUTREADER.fields_by_name['tf_record_input_reader'].containing_oneof = _INPUTREADER.oneofs_by_name['input_reader']
 _INPUTREADER.oneofs_by_name['input_reader'].fields.append(
   _INPUTREADER.fields_by_name['external_input_reader'])
 _INPUTREADER.fields_by_name['external_input_reader'].containing_oneof = _INPUTREADER.oneofs_by_name['input_reader']
+DESCRIPTOR.message_types_by_name['LabelDescription'] = _LABELDESCRIPTION
 DESCRIPTOR.message_types_by_name['InputReader'] = _INPUTREADER
 DESCRIPTOR.message_types_by_name['TFRecordInputReader'] = _TFRECORDINPUTREADER
 DESCRIPTOR.message_types_by_name['ExternalInputReader'] = _EXTERNALINPUTREADER
+
+LabelDescription = _reflection.GeneratedProtocolMessageType('LabelDescription', (_message.Message,), dict(
+  DESCRIPTOR = _LABELDESCRIPTION,
+  __module__ = 'classification.protos.input_reader_pb2'
+  # @@protoc_insertion_point(class_scope:classification.protos.LabelDescription)
+  ))
+_sym_db.RegisterMessage(LabelDescription)
 
 InputReader = _reflection.GeneratedProtocolMessageType('InputReader', (_message.Message,), dict(
   DESCRIPTOR = _INPUTREADER,
