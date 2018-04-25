@@ -82,6 +82,17 @@ for label_name in batched_tensors.keys():
 
     eval_ops_dict.update({'eval_' + label_name + '_precision %s\n': precisions})
 
+    ctr = 0
+    prec_sum = 0
+    for prec in precisions:
+
+        if not tf.is_nan(prec):
+            prec_sum += prec
+            ctr += 1
+
+    eval_ops_dict.update({'eval_' + label_name + '_precision_avg': prec_sum / ctr})
+
+
 
     #recall
     recalls = []
@@ -102,7 +113,16 @@ for label_name in batched_tensors.keys():
 
     eval_ops_dict.update({'eval_' + label_name + '_recall %s\n': recalls})
 
+    ctr = 0
+    rec_sum = 0
+    for rec in recalls:
 
+        if not tf.is_nan(rec):
+            rec_sum += rec
+            ctr += 1
+
+    eval_ops_dict.update({'eval_' + label_name + '_recall_avg': rec_sum / ctr})
+        
 
 
 
