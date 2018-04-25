@@ -9,7 +9,7 @@ import collections
 Helper = helpers.Helper
 
 FLAGS = tf.app.flags.FLAGS
-tf.app.flags.DEFINE_string('pipeline_config',None,'')
+tf.app.flags.DEFINE_string('pipeline_config', None, '')
 
 
 if not FLAGS.pipeline_config:
@@ -34,7 +34,7 @@ has_accuracy = {label.name: label.has_accuracy for label in model_config.multi_t
 classification_model = model_builder.build(model_config, False)
 batcher = Helper.get_inputs(eval_input_config, classification_model.preprocess)
 batched_tensors = batcher#batcher.dequeue()
-batched_tensors = {label: tensor for label,tensor in batched_tensors.items() if label in label_names or label == "input"}
+batched_tensors = {label: tensor for label, tensor in batched_tensors.items() if label in label_names or label == "input"}
 tf.summary.image("train",batched_tensors["input"])
 predictions = classification_model.predict(batched_tensors["input"])
 with tf.name_scope("eval"):
@@ -42,7 +42,7 @@ with tf.name_scope("eval"):
     eval_acc_dict = Helper.get_acc(predictions, batched_tensors, starts_from, has_accuracy)
 eval_ops_dict['loss %.2f '] = eval_loss
 for label in eval_acc_dict:
-    eval_ops_dict['eval_'+label+"_acc %.2f "] = eval_acc_dict[label]
+    eval_ops_dict['eval_' + label + "_acc %.2f "] = eval_acc_dict[label]
 
 confusion_matrices = {}
 for label_name in batched_tensors.keys():
@@ -54,10 +54,56 @@ for label_name in batched_tensors.keys():
     logit = tf.argmax(predictions[label_name], axis = 1)
     num_classes = num_classes_dict[label_name]
 
-    eval_ops_dict.update({'eval_'+label_name+"_confusion_matrix\n %s\n" : tf.confusion_matrix(label,
+    eval_ops_dict.update({'eval_'+label_name+'_confusion_matrix\n %s\n' : tf.confusion_matrix(label,
                                                                logit,
                                                                num_classes,
                                                                name = "confusion_"+label_name)})
+
+
+    conf_tensor = eval_ops_dict['eval_' + label_name + '_confusion_matrix']
+
+    #precision
+    precisions = []
+    for col_i in range(len(conf[0])):
+
+        actual_num = 0
+        sum_num = 0
+
+        for row_i in range(len(conf)):
+
+            if row_i == col_i:
+                actual_num = conf[row_i][col_i]
+
+            sum_num += conf[row_i][col_i]
+
+        prec_this_class = actual_num / sum_num
+        precisions.append(prec_this_class)
+
+    eval_ops_dict.update({'eval_' + label_name + '_precision': precisions})
+
+
+    #recall
+    recalls = []
+    for row_i in range(len(conf)):
+
+        actual_num = 0
+        sum_num = 0
+
+        for col_i in range(len(conf[0])):
+
+            if row_i == col_i:
+                actual_num = conf[row_i][col_i]
+
+            sum_num += conf[row_i][col_i]
+
+        recall_this_class = actual_num / sum_num
+        recalls.append(recall_this_class)
+
+    eval_ops_dict.update({'eval_' + label_name + '_recall': recalls})
+        
+
+
+
 
 evaluation_coordinator.EvaluationCoordinator(eval_ops_dict,
                                              eval_input_config.\
